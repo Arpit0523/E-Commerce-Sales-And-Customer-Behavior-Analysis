@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Comprehensive E-commerce Analytics Dashboard
-Multi-page Streamlit application with advanced analytics
+Multi-page Streamlit application with real dataset features
 
 Run:
     streamlit run dashboard.py
@@ -21,103 +21,144 @@ from src.customer_analysis import (
     perform_kmeans_clustering, 
     calculate_clv,
     cohort_analysis,
-    identify_churned_customers,
-    customer_purchase_patterns
+    identify_churned_customers
 )
-from src.sales_analysis import (
+from src. sales_analysis import (
     sales_trends_analysis,
     category_performance_analysis,
     product_profitability_analysis,
     market_basket_analysis,
     payment_shipping_analysis
 )
+from src. real_data_analysis import (
+    device_performance_analysis,
+    session_behavior_analysis,
+    rating_analysis,
+    city_performance_analysis,
+    returning_customer_analysis,
+    delivery_satisfaction_analysis
+)
 
 # Page configuration
 st.set_page_config(
-    page_title="E-commerce Analytics Dashboard",
+    page_title="E-commerce Analytics Pro",
     page_icon="🛍️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS with modern color scheme
+# Custom CSS
 st.markdown("""
     <style>
-    :root {
-        --primary-color: #0066CC;
-        --secondary-color: #00A3E0;
-        --accent-color: #00C9A7;
-        --success-color: #00D9A3;
-        --warning-color: #FFA500;
-        --danger-color: #E74C3C;
-        --dark-text: #1A202C;
-        --light-bg: #F7FAFC;
-    }
     .main {
         padding: 0rem 1rem;
-        background-color: var(--light-bg);
     }
     .metric-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 20px;
-        border-radius: 12px;
+        border-radius: 15px;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        color: white;
     }
     .stMetric {
-        background-color: #ffffff;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,102,204,0.1);
-        border-left: 4px solid var(--primary-color);
+        background-color: rgba(255, 255, 255, 0.98) !important;
+        padding: 20px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        border: 2px solid rgba(0, 102, 204, 0.1) !important;
     }
     .stMetric label {
-        color: #1A202C !important;
+        color: #000000 !important;
         font-weight: 600 !important;
+        font-size: 14px !important;
     }
     .stMetric [data-testid="stMetricValue"] {
         color: #000000 !important;
         font-weight: 700 !important;
+        font-size: 28px !important;
     }
     .stMetric [data-testid="stMetricDelta"] {
-        color: #2D3748 !important;
+        color: #1A202C !important;
+        font-weight: 500 !important;
+    }
+    div[data-testid="stDataFrame"],
+    div[data-testid="stDataFrame"] * {
+        color: #000000 !important;
     }
     h1 {
-        color: #FFFFFF !important;
+        color: #1f77b4 !important;
         font-weight: 700 !important;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        padding-bottom: 10px;
+        border-bottom: 3px solid #1f77b4;
     }
     h2 {
-        color: #F7FAFC !important;
+        color: #2c3e50 !important;
         font-weight: 600 !important;
+        margin-top: 20px;
     }
     h3 {
-        color: #E2E8F0 !important;
-        font-weight: 600 !important;
+        color: #1A202C !important;
+        font-weight: 700 !important;
+        font-size: 26px !important;
+        padding: 15px 20px !important;
+        margin: 25px 0 20px 0 !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+        color: #FFFFFF !important;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
     }
     .stTabs [data-baseweb="tab-list"] {
         gap: 24px;
-        background-color: #ffffff;
-        padding: 10px;
-        border-radius: 10px;
     }
     .stTabs [data-baseweb="tab"] {
         height: 50px;
         white-space: pre-wrap;
-        background-color: #EDF2F7;
+        background-color: #f0f2f6;
         border-radius: 8px;
         padding: 10px 20px;
         font-weight: 500;
-        color: var(--dark-text);
-        transition: all 0.3s ease;
-    }
-    .stTabs [data-baseweb="tab"]:hover {
-        background-color: #E2E8F0;
-        transform: translateY(-2px);
+        transition: all 0.3s;
     }
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #0066CC 0%, #00A3E0 100%);
+        background-color: #1f77b4;
         color: white;
-        box-shadow: 0 4px 6px rgba(0,102,204,0.3);
+    }
+    .highlight-box {
+        background-color: rgba(255, 255, 255, 0.98) !important;
+        padding: 20px !important;
+        border-radius: 12px !important;
+        border-left: 5px solid #1f77b4 !important;
+        margin: 10px 0 !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    }
+    .highlight-box * {
+        color: #000000 !important;
+    }
+    .highlight-box h4 {
+        color: #1A202C !important;
+        font-weight: 700 !important;
+        margin-bottom: 12px !important;
+        font-size: 18px !important;
+    }
+    .highlight-box p {
+        color: #000000 !important;
+        font-size: 15px !important;
+        line-height: 1.8 !important;
+        margin-bottom: 8px !important;
+    }
+    .highlight-box strong {
+        color: #000000 !important;
+        font-weight: 700 !important;
+    }
+    .highlight-box ul, .highlight-box li {
+        color: #000000 !important;
+        font-size: 15px !important;
+        line-height: 1.8 !important;
+    }
+    .stAlert, .stAlert * {
+        background-color: rgba(255, 255, 255, 0.98) !important;
+        color: #000000 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -130,7 +171,7 @@ def load_data():
         df = load_master()
         return df
     except FileNotFoundError:
-        st. error("⚠️ Master dataset not found!  Please run: python src/data_processing. py")
+        st. error("⚠️ Master dataset not found!  Please run: python src/real_data_processing.py")
         st.stop()
 
 # Load data
@@ -139,13 +180,14 @@ df = load_data()
 # Sidebar Navigation
 with st.sidebar:
     st. image("https://img.icons8.com/clouds/100/000000/shop.png", width=100)
-    st.title("🛍️ E-commerce Analytics")
+    st.title("🛍️ E-commerce Analytics Pro")
     
     # Page selection
     page = st.radio(
         "Navigation",
         ["📊 Overview", "📈 Sales Analysis", "👥 Customer Insights", 
-         "📦 Product Analysis", "🔮 Advanced Analytics"],
+         "📦 Product Analysis", "📱 Device & Session", "⭐ Satisfaction",
+         "🚚 Delivery Performance", "🔄 Loyalty Analysis", "🔮 Advanced Analytics"],
         label_visibility="collapsed"
     )
     
@@ -169,13 +211,17 @@ with st.sidebar:
     categories = ['All'] + sorted(df['category'].dropna().unique(). tolist())
     selected_category = st.selectbox("Category", categories)
     
-    # Country filter
-    countries = ['All'] + sorted(df['country'].dropna().unique().tolist())
-    selected_country = st.selectbox("Country", countries, index=0)
+    # City filter
+    cities = ['All'] + sorted(df['city']. dropna().unique().tolist())
+    selected_city = st. selectbox("City", cities, index=0)
     
     # Gender filter
-    genders = ['All'] + sorted(df['gender']. dropna().unique().tolist())
-    selected_gender = st. selectbox("Gender", genders)
+    genders = ['All'] + sorted(df['gender'].dropna().unique().tolist())
+    selected_gender = st.selectbox("Gender", genders)
+    
+    # Device filter (NEW)
+    devices = ['All'] + sorted(df['device_type'].dropna().unique().tolist())
+    selected_device = st.selectbox("Device Type", devices)
     
     st.markdown("---")
     st.info("📊 **Dashboard by Arpit0523**")
@@ -194,30 +240,33 @@ if len(date_range) == 2:
 if selected_category != 'All':
     filtered_df = filtered_df[filtered_df['category'] == selected_category]
 
-if selected_country != 'All':
-    filtered_df = filtered_df[filtered_df['country'] == selected_country]
+if selected_city != 'All':
+    filtered_df = filtered_df[filtered_df['city'] == selected_city]
 
 if selected_gender != 'All':
     filtered_df = filtered_df[filtered_df['gender'] == selected_gender]
+
+if selected_device != 'All':
+    filtered_df = filtered_df[filtered_df['device_type'] == selected_device]
 
 # ============================================================================
 # PAGE 1: OVERVIEW
 # ============================================================================
 if page == "📊 Overview":
     st.title("📊 Executive Dashboard Overview")
-    st.markdown("### Welcome to the E-commerce Analytics Dashboard")
     
     # Key Metrics Row
-    col1, col2, col3, col4, col5 = st.columns(5)
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
     
     total_revenue = filtered_df['total_amount'].sum()
     total_transactions = len(filtered_df)
     total_customers = filtered_df['customer_id'].nunique()
     avg_order_value = filtered_df['total_amount'].mean()
-    total_profit = filtered_df['profit'].sum()
+    avg_rating = filtered_df['rating'].mean()
+    returning_rate = (filtered_df['is_returning'] == True).sum() / len(filtered_df) * 100
     
     with col1:
-        st.metric(
+        st. metric(
             label="💰 Total Revenue",
             value=f"${total_revenue:,.0f}",
             delta=f"{(total_revenue / df['total_amount'].sum() * 100):.1f}% of total"
@@ -245,97 +294,112 @@ if page == "📊 Overview":
         )
     
     with col5:
-        profit_margin = (total_profit / total_revenue * 100) if total_revenue > 0 else 0
-        st.metric(
-            label="💵 Profit Margin",
-            value=f"{profit_margin:.1f}%",
-            delta=f"${total_profit:,.0f} profit"
+        st. metric(
+            label="⭐ Avg Rating",
+            value=f"{avg_rating:.2f}/5.0",
+            delta=f"{((avg_rating - df['rating'].mean()) / df['rating'].mean() * 100):.1f}%"
+        )
+    
+    with col6:
+        st. metric(
+            label="🔄 Returning Rate",
+            value=f"{returning_rate:.1f}%",
+            delta=f"{(returning_rate - (df['is_returning'] == True). sum() / len(df) * 100):.1f}%"
         )
     
     st.markdown("---")
     
-    # Two column layout
-    col1, col2 = st.columns(2)
+    # Three column layout
+    col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.subheader("📈 Revenue Trend Over Time")
-        
-        # Monthly revenue
-        monthly_rev = filtered_df.groupby(filtered_df['transaction_date']. dt.to_period('M'))['total_amount'].sum(). reset_index()
+        st.subheader("📈 Revenue Trend")
+        monthly_rev = filtered_df.groupby(filtered_df['transaction_date']. dt.to_period('M'))['total_amount'].sum().reset_index()
         monthly_rev['transaction_date'] = monthly_rev['transaction_date'].dt.to_timestamp()
         
-        fig = px.line(
+        fig = px.area(
             monthly_rev,
             x='transaction_date',
             y='total_amount',
-            title='Monthly Revenue',
+            title='Monthly Revenue Trend',
             labels={'total_amount': 'Revenue ($)', 'transaction_date': 'Date'}
         )
-        fig.update_traces(line_color='#0066CC', line_width=3, fill='tozeroy', fillcolor='rgba(0,102,204,0.1)')
-        fig.update_layout(
-            hovermode='x unified',
-            plot_bgcolor='#F7FAFC',
-            paper_bgcolor='white',
-            height=400,
-            font=dict(color='#1A202C')
-        )
+        fig.update_traces(line_color='#1f77b4', fillcolor='rgba(31, 119, 180, 0.3)')
+        fig.update_layout(height=350, hovermode='x unified')
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
-        st.subheader("🎯 Revenue by Category")
-        
+        st.subheader("🎯 Category Distribution")
         category_revenue = filtered_df.groupby('category')['total_amount'].sum().sort_values(ascending=False)
         
-        fig = px.pie(
+        fig = px. pie(
             values=category_revenue.values,
             names=category_revenue.index,
-            title='Category Distribution',
+            title='Revenue by Category',
             hole=0.4,
-            color_discrete_sequence=['#0066CC', '#00A3E0', '#00C9A7', '#7B68EE', '#FF6B9D', '#FFA500', '#FFD93D']
+            color_discrete_sequence=px.colors.qualitative.Set3
         )
-        fig.update_traces(textposition='inside', textinfo='percent+label')
-        fig.update_layout(height=400)
+        fig. update_traces(textposition='inside', textinfo='percent+label')
+        fig.update_layout(height=350)
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with col3:
+        st. subheader("📱 Device Usage")
+        device_dist = filtered_df['device_type'].value_counts()
+        
+        fig = px. bar(
+            x=device_dist.index,
+            y=device_dist.values,
+            title='Transactions by Device',
+            labels={'x': 'Device Type', 'y': 'Count'},
+            color=device_dist.values,
+            color_continuous_scale='Viridis'
+        )
+        fig.update_layout(height=350, showlegend=False)
         st.plotly_chart(fig, use_container_width=True)
     
     # Second row
     col1, col2 = st. columns(2)
     
     with col1:
-        st. subheader("🌍 Top 10 Countries by Revenue")
-        
-        country_revenue = filtered_df.groupby('country')['total_amount'].sum().sort_values(ascending=False).head(10)
+        st. subheader("🌍 Top Cities by Revenue")
+        city_revenue = filtered_df.groupby('city')['total_amount'].sum(). sort_values(ascending=False). head(10)
         
         fig = px.bar(
-            x=country_revenue.values,
-            y=country_revenue.index,
+            x=city_revenue.values,
+            y=city_revenue.index,
             orientation='h',
-            title='Revenue by Country',
-            labels={'x': 'Revenue ($)', 'y': 'Country'},
-            color=country_revenue.values,
-            color_continuous_scale=[[0, '#E3F2FD'], [0.5, '#0066CC'], [1, '#003D7A']]
+            title='Top 10 Cities',
+            labels={'x': 'Revenue ($)', 'y': 'City'},
+            color=city_revenue.values,
+            color_continuous_scale='Greens'
         )
         fig.update_layout(height=400, showlegend=False)
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
-        st.subheader("💳 Payment Method Distribution")
+        st.subheader("⭐ Rating Distribution")
+        rating_dist = filtered_df['rating'].value_counts(). sort_index()
         
-        payment_dist = filtered_df['payment_method'].value_counts()
-        
-        fig = px. bar(
-            x=payment_dist.index,
-            y=payment_dist.values,
-            title='Transactions by Payment Method',
-            labels={'x': 'Payment Method', 'y': 'Count'},
-            color=payment_dist.values,
-            color_continuous_scale=[[0, '#B3E5FC'], [0.5, '#00A3E0'], [1, '#0066CC']]
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=rating_dist.index,
+            y=rating_dist.values,
+            marker_color=['#e74c3c', '#e67e22', '#f39c12', '#3498db', '#2ecc71'],
+            text=rating_dist. values,
+            textposition='auto'
+        ))
+        fig.update_layout(
+            title='Customer Ratings Distribution',
+            xaxis_title='Rating (Stars)',
+            yaxis_title='Number of Orders',
+            height=400
         )
-        fig. update_layout(height=400, showlegend=False)
         st.plotly_chart(fig, use_container_width=True)
     
-    # Quick Stats
+    # Quick Insights
     st.markdown("---")
-    st.subheader("📊 Quick Statistics")
+    st.subheader("💡 Quick Insights")
     
     col1, col2, col3, col4 = st.columns(4)
     
@@ -344,17 +408,16 @@ if page == "📊 Overview":
         st.metric("🏆 Top Category", top_category)
     
     with col2:
-        popular_payment = filtered_df['payment_method'].mode()[0]
-        st.metric("🌟 Most Popular Payment", popular_payment)
+        most_used_device = filtered_df['device_type'].mode()[0]
+        st.metric("📱 Most Used Device", most_used_device)
     
     with col3:
-        repeat_customers = filtered_df.groupby('customer_id').size()
-        repeat_rate = (repeat_customers > 1).sum() / len(repeat_customers) * 100
-        st.metric("🔁 Repeat Customer Rate", f"{repeat_rate:.1f}%")
+        avg_session = filtered_df['session_duration'].mean()
+        st.metric("⏱️ Avg Session", f"{avg_session:.1f} min")
     
     with col4:
-        avg_items = filtered_df['quantity'].mean()
-        st.metric("📦 Avg Items/Order", f"{avg_items:.1f}")
+        avg_delivery = filtered_df['delivery_days'].mean()
+        st.metric("🚚 Avg Delivery", f"{avg_delivery:.1f} days")
 
 # ============================================================================
 # PAGE 2: SALES ANALYSIS
@@ -386,10 +449,8 @@ elif page == "📈 Sales Analysis":
                 y=trends['Revenue'],
                 mode='lines+markers',
                 name='Revenue',
-                line=dict(color='#0066CC', width=3),
-                fill='tozeroy',
-                fillcolor='rgba(0,102,204,0.2)',
-                marker=dict(size=6, color='#0066CC')
+                line=dict(color='#1f77b4', width=2),
+                fill='tozeroy'
             ),
             row=1, col=1
         )
@@ -400,10 +461,8 @@ elif page == "📈 Sales Analysis":
                 y=trends['Profit'],
                 mode='lines+markers',
                 name='Profit',
-                line=dict(color='#00C9A7', width=3),
-                fill='tozeroy',
-                fillcolor='rgba(0,201,167,0.2)',
-                marker=dict(size=6, color='#00C9A7')
+                line=dict(color='#2ecc71', width=2),
+                fill='tozeroy'
             ),
             row=2, col=1
         )
@@ -427,7 +486,7 @@ elif page == "📈 Sales Analysis":
             st.metric(f"Avg {time_period} Revenue", f"${avg_rev:,.0f}")
         
         with col3:
-            total_profit = trends['Profit']. sum()
+            total_profit = trends['Profit'].sum()
             st.metric("Total Profit", f"${total_profit:,.0f}")
         
         with col4:
@@ -453,10 +512,10 @@ elif page == "📈 Sales Analysis":
                 y='Revenue',
                 title='Revenue by Category',
                 color='Revenue',
-                color_continuous_scale=[[0, '#E3F2FD'], [0.5, '#00A3E0'], [1, '#0066CC']]
+                color_continuous_scale='Blues'
             )
             fig. update_layout(xaxis_tickangle=-45)
-            st.plotly_chart(fig, use_container_width=True)
+            st. plotly_chart(fig, use_container_width=True)
         
         with col2:
             fig = px.bar(
@@ -465,7 +524,7 @@ elif page == "📈 Sales Analysis":
                 y='Profit_Margin_Pct',
                 title='Profit Margin by Category (%)',
                 color='Profit_Margin_Pct',
-                color_continuous_scale=[[0, '#E0F7F4'], [0.5, '#00C9A7'], [1, '#00856F']]
+                color_continuous_scale='Greens'
             )
             fig.update_layout(xaxis_tickangle=-45)
             st.plotly_chart(fig, use_container_width=True)
@@ -473,7 +532,7 @@ elif page == "📈 Sales Analysis":
         # Detailed table
         st.subheader("📊 Category Performance Table")
         st.dataframe(
-            category_perf. style.format({
+            category_perf.style. format({
                 'Revenue': '${:,.2f}',
                 'Profit': '${:,.2f}',
                 'Avg_Transaction_Value': '${:,.2f}',
@@ -501,7 +560,7 @@ elif page == "📈 Sales Analysis":
             orientation='h',
             title=f'Top {top_n} Products by Revenue',
             color='Profit_Margin_Pct',
-            color_continuous_scale=[[0, '#FFE5E5'], [0.5, '#FFA500'], [1, '#00C9A7']],
+            color_continuous_scale='RdYlGn',
             labels={'Profit_Margin_Pct': 'Profit Margin (%)'}
         )
         fig.update_layout(height=max(400, top_n * 30), yaxis={'categoryorder': 'total ascending'})
@@ -517,7 +576,7 @@ elif page == "📈 Sales Analysis":
             color='Profit_Margin_Pct',
             hover_data=['product_name'],
             title='Product Revenue vs Profit (Top 50)',
-            color_continuous_scale=[[0, '#FF6B9D'], [0.5, '#00A3E0'], [1, '#00C9A7']]
+            color_continuous_scale='Viridis'
         )
         st.plotly_chart(fig, use_container_width=True)
         
@@ -553,7 +612,7 @@ elif page == "📈 Sales Analysis":
             st.plotly_chart(fig, use_container_width=True)
             
             st.dataframe(
-                payment_df.style.format({
+                payment_df. style.format({
                     'Revenue': '${:,.2f}',
                     'Avg_Transaction_Value': '${:,.2f}'
                 }),
@@ -562,7 +621,7 @@ elif page == "📈 Sales Analysis":
         
         with col2:
             st.markdown("#### 🚚 Shipping Methods")
-            fig = px. pie(
+            fig = px.pie(
                 shipping_df,
                 values='Revenue',
                 names='shipping_method',
@@ -571,7 +630,7 @@ elif page == "📈 Sales Analysis":
             )
             st.plotly_chart(fig, use_container_width=True)
             
-            st.dataframe(
+            st. dataframe(
                 shipping_df.style.format({
                     'Revenue': '${:,.2f}',
                     'Avg_Transaction_Value': '${:,.2f}'
@@ -594,9 +653,9 @@ elif page == "👥 Customer Insights":
         col1, col2, col3, col4 = st.columns(4)
         
         total_customers = filtered_df['customer_id'].nunique()
-        avg_purchases = filtered_df.groupby('customer_id').size().mean()
-        avg_customer_value = filtered_df.groupby('customer_id')['total_amount'].sum().mean()
-        repeat_customers = (filtered_df.groupby('customer_id').size() > 1).sum()
+        avg_purchases = filtered_df. groupby('customer_id'). size().mean()
+        avg_customer_value = filtered_df.groupby('customer_id')['total_amount'].sum(). mean()
+        repeat_customers = (filtered_df. groupby('customer_id'). size() > 1).sum()
         
         with col1:
             st.metric("Total Customers", f"{total_customers:,}")
@@ -619,7 +678,7 @@ elif page == "👥 Customer Insights":
                 nbins=20,
                 title='Customer Age Distribution',
                 labels={'age': 'Age', 'count': 'Number of Customers'},
-                color_discrete_sequence=['#0066CC']
+                color_discrete_sequence=['#3498db']
             )
             fig.update_layout(showlegend=False)
             st.plotly_chart(fig, use_container_width=True)
@@ -634,24 +693,24 @@ elif page == "👥 Customer Insights":
                 title='Revenue by Gender',
                 labels={'x': 'Gender', 'y': 'Revenue ($)'},
                 color=gender_revenue.values,
-                color_continuous_scale=[[0, '#00A3E0'], [1, '#0066CC']]
+                color_continuous_scale='Viridis'
             )
             st.plotly_chart(fig, use_container_width=True)
         
-        # Country analysis
-        st.subheader("🌍 Customer Distribution by Country")
-        customer_country = filtered_df.groupby('country')['customer_id'].nunique(). sort_values(ascending=False). head(15)
+        # City analysis
+        st.subheader("🌍 Customer Distribution by City")
+        customer_city = filtered_df.groupby('city')['customer_id'].nunique(). sort_values(ascending=False). head(15)
         
         fig = px.bar(
-            x=customer_country.values,
-            y=customer_country.index,
+            x=customer_city.values,
+            y=customer_city.index,
             orientation='h',
-            title='Top 15 Countries by Customer Count',
-            labels={'x': 'Number of Customers', 'y': 'Country'},
-            color=customer_country.values,
-            color_continuous_scale=[[0, '#E3F2FD'], [0.5, '#00A3E0'], [1, '#0066CC']]
+            title='Top 15 Cities by Customer Count',
+            labels={'x': 'Number of Customers', 'y': 'City'},
+            color=customer_city.values,
+            color_continuous_scale='Blues'
         )
-        fig. update_layout(height=500)
+        fig.update_layout(height=500)
         st.plotly_chart(fig, use_container_width=True)
     
     with tab2:
@@ -665,11 +724,10 @@ elif page == "👥 Customer Insights":
         with col1:
             segment_counts = rfm_df['Segment'].value_counts()
             
-            colors = {'Champions': '#00C9A7', 'Loyal': '#0066CC', 'Potential': '#FFA500', 'At Risk': '#E74C3C'}
-            color_list = [colors. get(seg, '#95a5a6') for seg in segment_counts.index]
+            colors = {'Champions': '#2ecc71', 'Loyal': '#3498db', 'Potential': '#f39c12', 'At Risk': '#e74c3c'}
             
             fig = px.bar(
-                x=segment_counts. index,
+                x=segment_counts.index,
                 y=segment_counts.values,
                 title='Customer Segments Distribution',
                 labels={'x': 'Segment', 'y': 'Number of Customers'},
@@ -680,10 +738,10 @@ elif page == "👥 Customer Insights":
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
-            segment_revenue = rfm_df.merge(
-                filtered_df.groupby('customer_id')['total_amount'].sum().reset_index(),
+            segment_revenue = rfm_df. merge(
+                filtered_df.groupby('customer_id')['total_amount']. sum(). reset_index(),
                 on='customer_id'
-            ).groupby('Segment')['total_amount'].sum()
+            ). groupby('Segment')['total_amount'].sum()
             
             fig = px. pie(
                 values=segment_revenue.values,
@@ -714,14 +772,14 @@ elif page == "👥 Customer Insights":
         # Segment statistics
         st.subheader("📈 Segment Statistics")
         
-        segment_stats = rfm_df.groupby('Segment'). agg({
+        segment_stats = rfm_df.groupby('Segment').agg({
             'Recency': 'mean',
             'Frequency': 'mean',
             'Monetary': ['mean', 'sum']
         }). round(2)
         
         segment_stats.columns = ['Avg Recency (days)', 'Avg Frequency', 'Avg Monetary ($)', 'Total Revenue ($)']
-        segment_stats['Customer Count'] = rfm_df.groupby('Segment').size()
+        segment_stats['Customer Count'] = rfm_df. groupby('Segment').size()
         
         st.dataframe(
             segment_stats.style.format({
@@ -748,7 +806,7 @@ elif page == "👥 Customer Insights":
                 nbins=30,
                 title='Customer Lifetime Value Distribution',
                 labels={'Total_Spent': 'Total Spent ($)'},
-                color_discrete_sequence=['#7B68EE']
+                color_discrete_sequence=['#9b59b6']
             )
             st.plotly_chart(fig, use_container_width=True)
         
@@ -761,7 +819,7 @@ elif page == "👥 Customer Insights":
                 color='Profit_Margin_Pct',
                 title='Transaction Count vs Lifetime Value',
                 labels={'Transaction_Count': 'Number of Transactions', 'Total_Spent': 'Total Spent ($)'},
-                color_continuous_scale=[[0, '#FF6B9D'], [0.5, '#00A3E0'], [1, '#00C9A7']]
+                color_continuous_scale='Viridis'
             )
             st.plotly_chart(fig, use_container_width=True)
         
@@ -777,9 +835,9 @@ elif page == "👥 Customer Insights":
             color='Total_Profit',
             title='Top 20 Customers',
             labels={'Total_Spent': 'Total Spent ($)', 'customer_id': 'Customer ID'},
-            color_continuous_scale=[[0, '#B3E5FC'], [0.5, '#00A3E0'], [1, '#0066CC']]
+            color_continuous_scale='Blues'
         )
-        fig. update_layout(xaxis_tickangle=-45)
+        fig.update_layout(xaxis_tickangle=-45)
         st.plotly_chart(fig, use_container_width=True)
         
         # CLV summary stats
@@ -819,13 +877,13 @@ elif page == "👥 Customer Insights":
         col1, col2 = st. columns(2)
         
         with col1:
-            churn_risk_dist = churn_df['Churn_Risk']. value_counts()
+            churn_risk_dist = churn_df['Churn_Risk'].value_counts()
             
             fig = px.pie(
-                values=churn_risk_dist.values,
+                values=churn_risk_dist. values,
                 names=churn_risk_dist.index,
                 title='Customer Churn Risk Distribution',
-                color_discrete_sequence=['#00C9A7', '#FFA500', '#FF8C42', '#E74C3C']
+                color_discrete_sequence=['#2ecc71', '#f39c12', '#e67e22', '#e74c3c']
             )
             st.plotly_chart(fig, use_container_width=True)
         
@@ -836,7 +894,7 @@ elif page == "👥 Customer Insights":
                 nbins=30,
                 title='Days Since Last Purchase Distribution',
                 labels={'Days_Since_Purchase': 'Days Since Last Purchase'},
-                color_discrete_sequence=['#00A3E0']
+                color_discrete_sequence=['#3498db']
             )
             fig.add_vline(x=churn_threshold, line_dash="dash", line_color="red", 
                          annotation_text="Churn Threshold")
@@ -853,7 +911,7 @@ elif page == "👥 Customer Insights":
                 labels=dict(x="Cohort Index (Months)", y="Cohort Month", color="Retention Rate (%)"),
                 x=[f"Month {i}" for i in range(retention.shape[1])],
                 y=[str(idx) for idx in retention.index],
-                color_continuous_scale=[[0, '#FFE5E5'], [0.5, '#00A3E0'], [1, '#00C9A7']],
+                color_continuous_scale='RdYlGn',
                 aspect='auto'
             )
             fig.update_layout(height=500)
@@ -875,11 +933,11 @@ elif page == "📦 Product Analysis":
     
     with col1:
         st. metric("Total Products", f"{filtered_df['product_name'].nunique():,}")
-        st.metric("Total Categories", f"{filtered_df['category']. nunique():,}")
+        st.metric("Total Categories", f"{filtered_df['category'].nunique():,}")
     
     with col2:
-        st.metric("Total Units Sold", f"{filtered_df['quantity'].sum():,}")
-        st.metric("Avg Units/Transaction", f"{filtered_df['quantity'].mean():.2f}")
+        st.metric("Total Units Sold", f"{filtered_df['quantity']. sum():,}")
+        st. metric("Avg Units/Transaction", f"{filtered_df['quantity'].mean():.2f}")
     
     st.markdown("---")
     
@@ -895,15 +953,13 @@ elif page == "📦 Product Analysis":
         x=top_products_df['product_name'],
         y=top_products_df['Revenue'],
         name='Revenue',
-        marker_color='#00A3E0',
-        marker_line=dict(color='#0066CC', width=1)
+        marker_color='lightblue'
     ))
-    fig.add_trace(go.Bar(
+    fig.add_trace(go. Bar(
         x=top_products_df['product_name'],
         y=top_products_df['Profit'],
         name='Profit',
-        marker_color='#00C9A7',
-        marker_line=dict(color='#00856F', width=1)
+        marker_color='lightgreen'
     ))
     fig.update_layout(
         title=f'Top {top_n} Products: Revenue vs Profit',
@@ -927,10 +983,852 @@ elif page == "📦 Product Analysis":
     )
 
 # ============================================================================
-# PAGE 5: ADVANCED ANALYTICS
+# PAGE 5: DEVICE & SESSION ANALYSIS
+# ============================================================================
+elif page == "📱 Device & Session":
+    st.title("📱 Device & Session Analytics")
+    
+    tab1, tab2, tab3 = st.tabs(["📊 Device Performance", "⏱️ Session Behavior", "📄 Pages Viewed"])
+    
+    with tab1:
+        st.subheader("Device Performance Analysis")
+        
+        device_stats = device_performance_analysis(filtered_df)
+        
+        # Device metrics
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            mobile_revenue = device_stats[device_stats['device_type'] == 'Mobile']['Total_Revenue'].values[0] if 'Mobile' in device_stats['device_type'].values else 0
+            st.metric("📱 Mobile Revenue", f"${mobile_revenue:,.0f}")
+        
+        with col2:
+            desktop_revenue = device_stats[device_stats['device_type'] == 'Desktop']['Total_Revenue'].values[0] if 'Desktop' in device_stats['device_type'].values else 0
+            st.metric("💻 Desktop Revenue", f"${desktop_revenue:,.0f}")
+        
+        with col3:
+            tablet_revenue = device_stats[device_stats['device_type'] == 'Tablet']['Total_Revenue'].values[0] if 'Tablet' in device_stats['device_type'].values else 0
+            st.metric("📲 Tablet Revenue", f"${tablet_revenue:,.0f}")
+        
+        # Device comparison charts
+        col1, col2 = st. columns(2)
+        
+        with col1:
+            fig = px.bar(
+                device_stats,
+                x='device_type',
+                y='Total_Revenue',
+                title='Revenue by Device Type',
+                color='Avg_Rating',
+                color_continuous_scale='RdYlGn',
+                text='Total_Revenue'
+            )
+            fig.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            fig = px.scatter(
+                device_stats,
+                x='Avg_Session_Minutes',
+                y='Avg_Order_Value',
+                size='Transactions',
+                color='device_type',
+                title='Session Duration vs Order Value',
+                labels={
+                    'Avg_Session_Minutes': 'Avg Session (minutes)',
+                    'Avg_Order_Value': 'Avg Order Value ($)'
+                }
+            )
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        # Device performance table
+        st.subheader("📊 Detailed Device Metrics")
+        st.dataframe(
+            device_stats.style.format({
+                'Total_Revenue': '${:,.2f}',
+                'Avg_Order_Value': '${:,.2f}',
+                'Avg_Session_Minutes': '{:.1f}',
+                'Avg_Pages_Viewed': '{:.1f}',
+                'Avg_Rating': '{:.2f}',
+                'Conversion_Quality': '{:.2f}'
+            }).background_gradient(subset=['Total_Revenue', 'Avg_Rating'], cmap='Greens'),
+            use_container_width=True
+        )
+    
+    with tab2:
+        st.subheader("Session Behavior Analysis")
+        
+        session_stats = session_behavior_analysis(filtered_df)
+        
+        # Session metrics
+        col1, col2, col3 = st.columns(3)
+        
+        avg_session = filtered_df['session_duration'].mean()
+        median_session = filtered_df['session_duration'].median()
+        max_session = filtered_df['session_duration'].max()
+        
+        with col1:
+            st.metric("⏱️ Avg Session", f"{avg_session:.1f} min")
+        with col2:
+            st.metric("📊 Median Session", f"{median_session:.1f} min")
+        with col3:
+            st.metric("⏰ Max Session", f"{max_session:.0f} min")
+        
+        # Session distribution
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            fig = px.histogram(
+                filtered_df,
+                x='session_duration',
+                nbins=30,
+                title='Session Duration Distribution',
+                labels={'session_duration': 'Session Duration (minutes)'},
+                color_discrete_sequence=['#3498db']
+            )
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            fig = px. bar(
+                session_stats,
+                x='session_segment',
+                y='Avg_Order_Value',
+                title='Order Value by Session Length',
+                color='Avg_Rating',
+                color_continuous_scale='RdYlGn',
+                text='Avg_Order_Value'
+            )
+            fig.update_traces(texttemplate='$%{text:.0f}', textposition='outside')
+            fig.update_layout(height=400)
+            st. plotly_chart(fig, use_container_width=True)
+        
+        # Detailed table
+        st.dataframe(
+            session_stats. style.format({
+                'Avg_Order_Value': '${:,.2f}',
+                'Total_Revenue': '${:,.2f}',
+                'Avg_Pages_Viewed': '{:.1f}',
+                'Avg_Rating': '{:.2f}',
+                'Avg_Discount': '${:.2f}'
+            }),
+            use_container_width=True
+        )
+    
+    with tab3:
+        st. subheader("Pages Viewed Analysis")
+        
+        # Pages viewed metrics
+        col1, col2, col3, col4 = st.columns(4)
+        
+        avg_pages = filtered_df['pages_viewed'].mean()
+        median_pages = filtered_df['pages_viewed'].median()
+        max_pages = filtered_df['pages_viewed'].max()
+        pages_revenue_corr = filtered_df['pages_viewed'].corr(filtered_df['total_amount'])
+        
+        with col1:
+            st.metric("📄 Avg Pages", f"{avg_pages:.1f}")
+        with col2:
+            st. metric("📊 Median Pages", f"{median_pages:.0f}")
+        with col3:
+            st.metric("📚 Max Pages", f"{max_pages:.0f}")
+        with col4:
+            st.metric("🔗 Revenue Correlation", f"{pages_revenue_corr:.3f}")
+        
+        # Pages viewed analysis
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            fig = px.scatter(
+                filtered_df,
+                x='pages_viewed',
+                y='total_amount',
+                trendline='ols',
+                title='Pages Viewed vs Order Value',
+                labels={'pages_viewed': 'Pages Viewed', 'total_amount': 'Order Value ($)'},
+                opacity=0.5
+            )
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            pages_groups = filtered_df.groupby(pd.cut(filtered_df['pages_viewed'], bins=[0, 5, 10, 15, 50])).agg({
+                'total_amount': 'mean',
+                'rating': 'mean',
+                'transaction_id': 'count'
+            }).reset_index()
+            pages_groups.columns = ['Pages_Range', 'Avg_Order_Value', 'Avg_Rating', 'Count']
+            pages_groups['Pages_Range'] = pages_groups['Pages_Range'].astype(str)
+            
+            fig = px.bar(
+                pages_groups,
+                x='Pages_Range',
+                y='Avg_Order_Value',
+                title='Order Value by Pages Viewed Range',
+                color='Avg_Rating',
+                color_continuous_scale='RdYlGn',
+                text='Avg_Order_Value'
+            )
+            fig.update_traces(texttemplate='$%{text:.0f}', textposition='outside')
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+
+# ============================================================================
+# PAGE 6: SATISFACTION ANALYSIS
+# ============================================================================
+elif page == "⭐ Satisfaction":
+    st.title("⭐ Customer Satisfaction Analysis")
+    
+    tab1, tab2, tab3 = st.tabs(["📊 Rating Overview", "🔍 Factors Analysis", "📈 Trends"])
+    
+    with tab1:
+        st.subheader("Customer Rating Overview")
+        
+        rating_stats = rating_analysis(filtered_df)
+        
+        # Rating metrics
+        col1, col2, col3, col4 = st.columns(4)
+        
+        avg_rating = filtered_df['rating'].mean()
+        rating_5_pct = (filtered_df['rating'] == 5).sum() / len(filtered_df) * 100
+        rating_low_pct = (filtered_df['rating'] <= 2).sum() / len(filtered_df) * 100
+        nps_score = rating_5_pct - rating_low_pct
+        
+        with col1:
+            st.metric("⭐ Average Rating", f"{avg_rating:.2f}/5. 0")
+        with col2:
+            st.metric("🌟 5-Star Rate", f"{rating_5_pct:.1f}%")
+        with col3:
+            st.metric("⚠️ Low Rating Rate", f"{rating_low_pct:.1f}%")
+        with col4:
+            st.metric("📊 NPS Score", f"{nps_score:.1f}")
+        
+        # Rating distribution
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            fig = go.Figure()
+            colors = ['#e74c3c', '#e67e22', '#f39c12', '#3498db', '#2ecc71']
+            fig.add_trace(go.Bar(
+                x=rating_stats['rating'],
+                y=rating_stats['Transaction_Count'],
+                marker_color=colors,
+                text=rating_stats['Percentage']. apply(lambda x: f"{x:.1f}%"),
+                textposition='auto',
+                name='Count'
+            ))
+            fig. update_layout(
+                title='Rating Distribution',
+                xaxis_title='Rating (Stars)',
+                yaxis_title='Number of Transactions',
+                height=400
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            fig = px.pie(
+                rating_stats,
+                values='Transaction_Count',
+                names='rating',
+                title='Rating Proportion',
+                color='rating',
+                color_discrete_map={1: '#e74c3c', 2: '#e67e22', 3: '#f39c12', 4: '#3498db', 5: '#2ecc71'},
+                hole=0.4
+            )
+            fig.update_traces(textposition='inside', textinfo='percent+label')
+            fig.update_layout(height=400)
+            st. plotly_chart(fig, use_container_width=True)
+        
+        # Rating by category
+        st.subheader("📊 Rating by Category")
+        
+        category_ratings = filtered_df.groupby('category'). agg({
+            'rating': 'mean',
+            'transaction_id': 'count'
+        }).sort_values('rating', ascending=False). reset_index()
+        category_ratings.columns = ['category', 'avg_rating', 'count']
+        
+        fig = px.bar(
+            category_ratings,
+            x='category',
+            y='avg_rating',
+            title='Average Rating by Category',
+            color='avg_rating',
+            color_continuous_scale='RdYlGn',
+            range_color=[1, 5],
+            text='avg_rating'
+        )
+        fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+        fig. update_layout(height=400, xaxis_tickangle=-45)
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Rating statistics table
+        st.dataframe(
+            rating_stats. style.format({
+                'Total_Revenue': '${:,.2f}',
+                'Avg_Discount': '${:,.2f}',
+                'Avg_Delivery_Days': '{:.1f}',
+                'Avg_Session_Minutes': '{:.1f}',
+                'Percentage': '{:.2f}%'
+            }).background_gradient(subset=['Total_Revenue'], cmap='Greens'),
+            use_container_width=True
+        )
+    
+    with tab2:
+        st.subheader("🔍 Factors Affecting Satisfaction")
+        
+        # Delivery time vs rating
+        delivery_satisfaction = delivery_satisfaction_analysis(filtered_df)
+        
+        col1, col2 = st. columns(2)
+        
+        with col1:
+            fig = px.bar(
+                delivery_satisfaction,
+                x='delivery_segment',
+                y='Avg_Rating',
+                title='Rating by Delivery Speed',
+                color='Avg_Rating',
+                color_continuous_scale='RdYlGn',
+                range_color=[1, 5],
+                text='Avg_Rating'
+            )
+            fig. update_traces(texttemplate='%{text:.2f}', textposition='outside')
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            fig = px.scatter(
+                filtered_df,
+                x='delivery_days',
+                y='rating',
+                trendline='ols',
+                title='Delivery Time vs Rating',
+                labels={'delivery_days': 'Delivery Days', 'rating': 'Rating'},
+                opacity=0.5
+            )
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        # Device vs rating
+        st.subheader("📱 Device Impact on Satisfaction")
+        
+        device_rating = filtered_df.groupby('device_type')['rating'].mean().sort_values(ascending=False)
+        
+        fig = px. bar(
+            x=device_rating.index,
+            y=device_rating.values,
+            title='Average Rating by Device Type',
+            labels={'x': 'Device', 'y': 'Avg Rating'},
+            color=device_rating.values,
+            color_continuous_scale='RdYlGn',
+            text=device_rating.values
+        )
+        fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+        fig.update_layout(height=400)
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Correlation heatmap
+        st.subheader("🔗 Correlation Analysis")
+        
+        corr_data = filtered_df[['rating', 'total_amount', 'discount', 'delivery_days', 'session_duration', 'pages_viewed']].corr()
+        
+        fig = px.imshow(
+            corr_data,
+            title='Satisfaction Factors Correlation',
+            color_continuous_scale='RdBu',
+            aspect='auto',
+            text_auto='. 2f'
+        )
+        fig.update_layout(height=500)
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with tab3:
+        st. subheader("📈 Rating Trends Over Time")
+        
+        # Monthly rating trend
+        monthly_rating = filtered_df.groupby(filtered_df['transaction_date'].dt.to_period('M')).agg({
+            'rating': 'mean',
+            'transaction_id': 'count'
+        }).reset_index()
+        monthly_rating['transaction_date'] = monthly_rating['transaction_date'].dt.to_timestamp()
+        monthly_rating. columns = ['date', 'avg_rating', 'count']
+        
+        fig = go.Figure()
+        
+        fig.add_trace(go.Scatter(
+            x=monthly_rating['date'],
+            y=monthly_rating['avg_rating'],
+            mode='lines+markers',
+            name='Avg Rating',
+            line=dict(color='#2ecc71', width=3),
+            marker=dict(size=8)
+        ))
+        
+        fig. add_hline(y=filtered_df['rating'].mean(), line_dash="dash", 
+                     line_color="red", annotation_text="Overall Average")
+        
+        fig. update_layout(
+            title='Monthly Average Rating Trend',
+            xaxis_title='Month',
+            yaxis_title='Average Rating',
+            height=400,
+            hovermode='x unified'
+        )
+        st. plotly_chart(fig, use_container_width=True)
+        
+        # Low rating alerts
+        st.subheader("⚠️ Low Rating Alerts")
+        
+        low_ratings = filtered_df[filtered_df['rating'] <= 2]. copy()
+        
+        if len(low_ratings) > 0:
+            st.warning(f"⚠️ Found {len(low_ratings)} transactions with ratings ≤ 2 stars")
+            
+            col1, col2 = st. columns(2)
+            
+            with col1:
+                low_by_category = low_ratings['category'].value_counts()
+                st.write("**Low Ratings by Category:**")
+                st. dataframe(low_by_category, use_container_width=True)
+            
+            with col2:
+                low_by_city = low_ratings['city'].value_counts()
+                st.write("**Low Ratings by City:**")
+                st.dataframe(low_by_city, use_container_width=True)
+        else:
+            st.success("✅ No low ratings in filtered data!")
+
+# ============================================================================
+# PAGE 7: DELIVERY PERFORMANCE
+# ============================================================================
+elif page == "🚚 Delivery Performance":
+    st.title("🚚 Delivery Performance Analysis")
+    
+    tab1, tab2, tab3 = st. tabs(["📊 Overview", "🌍 City Analysis", "⏱️ Speed Analysis"])
+    
+    with tab1:
+        st.subheader("Delivery Performance Overview")
+        
+        # Delivery metrics
+        col1, col2, col3, col4 = st.columns(4)
+        
+        avg_delivery = filtered_df['delivery_days']. mean()
+        median_delivery = filtered_df['delivery_days']. median()
+        fast_delivery_pct = (filtered_df['delivery_days'] <= 3).sum() / len(filtered_df) * 100
+        slow_delivery_pct = (filtered_df['delivery_days'] > 7).sum() / len(filtered_df) * 100
+        
+        with col1:
+            st.metric("📦 Avg Delivery", f"{avg_delivery:.1f} days")
+        with col2:
+            st.metric("📊 Median Delivery", f"{median_delivery:.0f} days")
+        with col3:
+            st.metric("⚡ Fast Delivery Rate", f"{fast_delivery_pct:.1f}%")
+        with col4:
+            st.metric("🐌 Slow Delivery Rate", f"{slow_delivery_pct:.1f}%")
+        
+        # Delivery distribution
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            fig = px.histogram(
+                filtered_df,
+                x='delivery_days',
+                nbins=30,
+                title='Delivery Time Distribution',
+                labels={'delivery_days': 'Delivery Days'},
+                color_discrete_sequence=['#3498db']
+            )
+            fig.add_vline(x=avg_delivery, line_dash="dash", line_color="red",
+                         annotation_text=f"Avg: {avg_delivery:.1f}d")
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            delivery_satisfaction = delivery_satisfaction_analysis(filtered_df)
+            
+            fig = px.bar(
+                delivery_satisfaction,
+                x='delivery_segment',
+                y='Avg_Rating',
+                title='Customer Satisfaction by Delivery Speed',
+                color='Avg_Rating',
+                color_continuous_scale='RdYlGn',
+                range_color=[1, 5],
+                text='Avg_Rating'
+            )
+            fig. update_traces(texttemplate='%{text:.2f}⭐', textposition='outside')
+            fig.update_layout(height=400)
+            st. plotly_chart(fig, use_container_width=True)
+        
+        # Delivery by shipping method
+        st.subheader("📦 Delivery by Shipping Method")
+        
+        shipping_perf = filtered_df.groupby('shipping_method').agg({
+            'delivery_days': ['mean', 'min', 'max'],
+            'rating': 'mean',
+            'transaction_id': 'count'
+        }).round(2)
+        shipping_perf.columns = ['Avg_Days', 'Min_Days', 'Max_Days', 'Avg_Rating', 'Count']
+        
+        st.dataframe(
+            shipping_perf.style. format({
+                'Avg_Days': '{:.1f}',
+                'Avg_Rating': '{:.2f}'
+            }).background_gradient(subset=['Avg_Rating'], cmap='RdYlGn'),
+            use_container_width=True
+        )
+    
+    with tab2:
+        st.subheader("🌍 Delivery Performance by City")
+        
+        city_delivery = filtered_df.groupby('city').agg({
+            'delivery_days': ['mean', 'median'],
+            'rating': 'mean',
+            'transaction_id': 'count'
+        }).round(2)
+        city_delivery.columns = ['Avg_Delivery_Days', 'Median_Delivery_Days', 'Avg_Rating', 'Orders']
+        city_delivery = city_delivery.sort_values('Avg_Delivery_Days'). reset_index()
+        
+        # City delivery comparison
+        fig = px.bar(
+            city_delivery,
+            x='city',
+            y='Avg_Delivery_Days',
+            title='Average Delivery Time by City',
+            color='Avg_Rating',
+            color_continuous_scale='RdYlGn',
+            text='Avg_Delivery_Days'
+        )
+        fig.update_traces(texttemplate='%{text:.1f}d', textposition='outside')
+        fig.update_layout(height=400, xaxis_tickangle=-45)
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # City performance table
+        st.subheader("📊 Detailed City Metrics")
+        st.dataframe(
+            city_delivery.style.format({
+                'Avg_Delivery_Days': '{:.1f}',
+                'Median_Delivery_Days': '{:.1f}',
+                'Avg_Rating': '{:.2f}'
+            }).background_gradient(subset=['Avg_Rating'], cmap='RdYlGn'),
+            use_container_width=True
+        )
+    
+    with tab3:
+        st.subheader("⏱️ Delivery Speed Analysis")
+        
+        delivery_satisfaction = delivery_satisfaction_analysis(filtered_df)
+        
+        col1, col2 = st. columns(2)
+        
+        with col1:
+            fig = px.pie(
+                delivery_satisfaction,
+                values='Transaction_Count',
+                names='delivery_segment',
+                title='Orders by Delivery Speed',
+                color_discrete_sequence=['#2ecc71', '#3498db', '#f39c12', '#e74c3c'],
+                hole=0.4
+            )
+            fig.update_traces(textposition='inside', textinfo='percent+label')
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            fig = px.bar(
+                delivery_satisfaction,
+                x='delivery_segment',
+                y='Returning_Customer_Rate_%',
+                title='Returning Customer Rate by Delivery Speed',
+                color='Returning_Customer_Rate_%',
+                color_continuous_scale='Greens',
+                text='Returning_Customer_Rate_%'
+            )
+            fig.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        # Delivery speed table
+        st.dataframe(
+            delivery_satisfaction.style.format({
+                'Avg_Rating': '{:.2f}',
+                'Avg_Order_Value': '${:,.2f}',
+                'Returning_Customer_Rate_%': '{:.1f}%'
+            }).background_gradient(subset=['Avg_Rating'], cmap='RdYlGn'),
+            use_container_width=True
+        )
+# ============================================================================
+# PAGE 8: LOYALTY ANALYSIS
+# ============================================================================
+elif page == "🔄 Loyalty Analysis":
+    st.title("🔄 Customer Loyalty & Retention Analysis")
+    
+    tab1, tab2, tab3 = st. tabs(["📊 Returning vs New", "💎 Loyalty Drivers", "🎯 Recommendations"])
+    
+    with tab1:
+        st.subheader("Returning vs New Customer Analysis")
+        
+        returning_stats = returning_customer_analysis(filtered_df)
+        
+        # Key metrics
+        col1, col2, col3 = st.columns(3)
+        
+        returning_rate = (filtered_df['is_returning'] == True).sum() / len(filtered_df) * 100
+        new_customers = (filtered_df['is_returning'] == False).sum()
+        returning_customers = (filtered_df['is_returning'] == True).sum()
+        
+        with col1:
+            st.metric("🔄 Returning Rate", f"{returning_rate:.1f}%")
+        with col2:
+            st. metric("🆕 New Customers", f"{new_customers:,}")
+        with col3:
+            st.metric("💚 Returning Customers", f"{returning_customers:,}")
+        
+        # Comparison charts
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            fig = px.bar(
+                returning_stats,
+                x='index',
+                y='Avg_Order_Value',
+                title='Average Order Value Comparison',
+                color='index',
+                color_discrete_map={'New Customer': '#e74c3c', 'Returning Customer': '#2ecc71'},
+                text='Avg_Order_Value'
+            )
+            fig.update_traces(texttemplate='$%{text:.2f}', textposition='outside')
+            fig. update_layout(height=400, showlegend=False)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            fig = px.bar(
+                returning_stats,
+                x='index',
+                y='Avg_Rating',
+                title='Average Rating Comparison',
+                color='index',
+                color_discrete_map={'New Customer': '#e74c3c', 'Returning Customer': '#2ecc71'},
+                text='Avg_Rating'
+            )
+            fig.update_traces(texttemplate='%{text:.2f}⭐', textposition='outside')
+            fig.update_layout(height=400, showlegend=False)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        # Detailed comparison
+        st.subheader("📊 Detailed Comparison")
+        
+        st.dataframe(
+            returning_stats.style.format({
+                'Avg_Order_Value': '${:,.2f}',
+                'Total_Revenue': '${:,.2f}',
+                'Avg_Rating': '{:.2f}',
+                'Avg_Session_Minutes': '{:.1f}',
+                'Avg_Pages_Viewed': '{:.1f}',
+                'Avg_Discount': '${:.2f}'
+            }).background_gradient(subset=['Total_Revenue', 'Avg_Rating'], cmap='Greens'),
+            use_container_width=True
+        )
+        
+        # Revenue distribution
+        st.subheader("💰 Revenue Distribution")
+        
+        fig = px.pie(
+            returning_stats,
+            values='Total_Revenue',
+            names='index',
+            title='Revenue Share: New vs Returning Customers',
+            color='index',
+            color_discrete_map={'New Customer': '#e74c3c', 'Returning Customer': '#2ecc71'},
+            hole=0.4
+        )
+        fig.update_traces(textposition='inside', textinfo='percent+label')
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with tab2:
+        st.subheader("💎 What Drives Customer Loyalty? ")
+        
+        # Analyze factors that correlate with returning
+        returning_by_category = filtered_df.groupby('category'). agg({
+            'is_returning': lambda x: (x == True).sum() / len(x) * 100,
+            'transaction_id': 'count'
+        }).round(2)
+        returning_by_category.columns = ['Returning_Rate_%', 'Total_Orders']
+        returning_by_category = returning_by_category.sort_values('Returning_Rate_%', ascending=False). reset_index()
+        
+        col1, col2 = st. columns(2)
+        
+        with col1:
+            fig = px.bar(
+                returning_by_category,
+                x='category',
+                y='Returning_Rate_%',
+                title='Returning Customer Rate by Category',
+                color='Returning_Rate_%',
+                color_continuous_scale='Greens',
+                text='Returning_Rate_%'
+            )
+            fig.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
+            fig.update_layout(height=400, xaxis_tickangle=-45)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        with col2:
+            # Device loyalty
+            returning_by_device = filtered_df.groupby('device_type').agg({
+                'is_returning': lambda x: (x == True).sum() / len(x) * 100
+            }).round(2)
+            returning_by_device.columns = ['Returning_Rate_%']
+            returning_by_device = returning_by_device.sort_values('Returning_Rate_%', ascending=False).reset_index()
+            
+            fig = px. bar(
+                returning_by_device,
+                x='device_type',
+                y='Returning_Rate_%',
+                title='Returning Customer Rate by Device',
+                color='Returning_Rate_%',
+                color_continuous_scale='Greens',
+                text='Returning_Rate_%'
+            )
+            fig.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
+            fig.update_layout(height=400)
+            st.plotly_chart(fig, use_container_width=True)
+        
+        # Rating impact
+        st.subheader("⭐ Rating Impact on Loyalty")
+        
+        loyalty_by_rating = filtered_df.groupby('rating').agg({
+            'is_returning': lambda x: (x == True).sum() / len(x) * 100,
+            'transaction_id': 'count'
+        }).round(2)
+        loyalty_by_rating.columns = ['Returning_Rate_%', 'Count']
+        loyalty_by_rating = loyalty_by_rating.reset_index()
+        
+        fig = px.line(
+            loyalty_by_rating,
+            x='rating',
+            y='Returning_Rate_%',
+            title='Loyalty Rate by Customer Rating',
+            markers=True,
+            text='Returning_Rate_%'
+        )
+        fig.update_traces(texttemplate='%{text:.1f}%', textposition='top center',
+                         line_color='#2ecc71', line_width=3, marker=dict(size=12))
+        fig.update_layout(height=400)
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Discount impact
+        st.subheader("💰 Discount Impact on Loyalty")
+        
+        # Compare discount usage
+        discount_comparison = filtered_df.groupby('is_returning').agg({
+            'discount': 'mean',
+            'total_amount': 'mean'
+        }). round(2)
+        discount_comparison.index = ['New Customer', 'Returning Customer']
+        discount_comparison = discount_comparison.reset_index()
+        discount_comparison. columns = ['Customer_Type', 'Avg_Discount', 'Avg_Order_Value']
+        
+        fig = px.bar(
+            discount_comparison,
+            x='Customer_Type',
+            y='Avg_Discount',
+            title='Average Discount: New vs Returning',
+            color='Customer_Type',
+            color_discrete_map={'New Customer': '#e74c3c', 'Returning Customer': '#2ecc71'},
+            text='Avg_Discount'
+        )
+        fig.update_traces(texttemplate='$%{text:.2f}', textposition='outside')
+        fig.update_layout(height=400, showlegend=False)
+        st.plotly_chart(fig, use_container_width=True)
+    
+    with tab3:
+        st.subheader("🎯 Loyalty Improvement Recommendations")
+        
+        # Calculate key insights
+        new_customer_avg = returning_stats[returning_stats['index'] == 'New Customer']['Avg_Order_Value'].values[0]
+        returning_customer_avg = returning_stats[returning_stats['index'] == 'Returning Customer']['Avg_Order_Value'].values[0]
+        value_difference = returning_customer_avg - new_customer_avg
+        
+        new_rating = returning_stats[returning_stats['index'] == 'New Customer']['Avg_Rating'].values[0]
+        returning_rating = returning_stats[returning_stats['index'] == 'Returning Customer']['Avg_Rating'].values[0]
+        
+        col1, col2 = st. columns(2)
+        
+        with col1:
+            st. markdown(f"""
+            <div class="highlight-box">
+                <h4>📈 Value Opportunity:</h4>
+                <p>Returning customers spend <strong>${value_difference:.2f} more</strong> per order</p>
+                <p>Improving retention by 10% could generate:</p>
+                <p><strong>${(returning_customers * 0.1 * returning_customer_avg):,.2f}</strong> additional revenue</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown(f"""
+            <div class="highlight-box">
+                <h4>⭐ Quality Opportunity:</h4>
+                <p>Returning customers rate <strong>{returning_rating - new_rating:.2f} stars higher</strong></p>
+                <p>Focus on first-time experience to boost loyalty</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Recommendations
+        st.subheader("💡 Actionable Recommendations")
+        
+        col1, col2 = st. columns(2)
+        
+        with col1:
+            st. markdown("""
+            <div class="highlight-box">
+                <h4>🎯 Retention Strategies:</h4>
+                <ol>
+                    <li><strong>Welcome Program:</strong> Special discount for first purchase</li>
+                    <li><strong>Loyalty Points:</strong> Reward returning customers</li>
+                    <li><strong>Email Campaigns:</strong> Re-engage after 30 days</li>
+                    <li><strong>Personalization:</strong> Recommend based on past purchases</li>
+                    <li><strong>VIP Program:</strong> Benefits for top customers</li>
+                </ol>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown("""
+            <div class="highlight-box">
+                <h4>🚀 Quick Wins:</h4>
+                <ol>
+                    <li><strong>Improve Delivery:</strong> Fast shipping increases loyalty</li>
+                    <li><strong>Follow-up:</strong> Ask for feedback after first purchase</li>
+                    <li><strong>Quality Focus:</strong> High ratings correlate with loyalty</li>
+                    <li><strong>Mobile Experience:</strong> Optimize for mobile users</li>
+                    <li><strong>Customer Support:</strong> Resolve issues quickly</li>
+                </ol>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Category-specific recommendations
+        st.subheader("📦 Category-Specific Insights")
+        
+        top_loyalty_category = returning_by_category.iloc[0]
+        low_loyalty_category = returning_by_category.iloc[-1]
+        
+        st.markdown(f"""
+        <div class="highlight-box">
+            <h4>📊 Category Performance:</h4>
+            <p><strong>Best Loyalty:</strong> {top_loyalty_category['category']} ({top_loyalty_category['Returning_Rate_%']:.1f}% returning rate)</p>
+            <p><strong>Needs Improvement:</strong> {low_loyalty_category['category']} ({low_loyalty_category['Returning_Rate_%']:.1f}% returning rate)</p>
+            <p><strong>Action:</strong> Apply successful strategies from {top_loyalty_category['category']} to {low_loyalty_category['category']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+# ============================================================================
+# PAGE 9: ADVANCED ANALYTICS
 # ============================================================================
 elif page == "🔮 Advanced Analytics":
-    st. title("🔮 Advanced Analytics & Insights")
+    st.title("🔮 Advanced Analytics & Insights")
     
     tab1, tab2, tab3 = st.tabs(["🛒 Market Basket", "📊 K-Means Clustering", "📈 Forecasting"])
     
@@ -939,7 +1837,7 @@ elif page == "🔮 Advanced Analytics":
         st.info("Discovering which product categories are frequently purchased together")
         
         # Parameters
-        col1, col2 = st. columns(2)
+        col1, col2 = st.columns(2)
         with col1:
             min_support = st.slider("Minimum Support", 0.001, 0.1, 0.01, 0.001)
         with col2:
@@ -960,7 +1858,7 @@ elif page == "🔮 Advanced Analytics":
                 title='Top 10 Product Associations by Lift',
                 labels={'y': 'Product Pair', 'Lift': 'Lift Score'},
                 color='Lift',
-                color_continuous_scale=[[0, '#E3F2FD'], [0.5, '#00A3E0'], [1, '#0066CC']]
+                color_continuous_scale='Viridis'
             )
             fig.update_layout(height=500)
             st.plotly_chart(fig, use_container_width=True)
@@ -997,7 +1895,7 @@ elif page == "🔮 Advanced Analytics":
         col1, col2 = st. columns(2)
         
         with col1:
-            cluster_dist = clusters_df['Cluster'].value_counts(). sort_index()
+            cluster_dist = clusters_df['Cluster'].value_counts().sort_index()
             
             fig = px.bar(
                 x=[f"Cluster {i}" for i in cluster_dist.index],
@@ -1005,7 +1903,7 @@ elif page == "🔮 Advanced Analytics":
                 title='Customer Distribution by Cluster',
                 labels={'x': 'Cluster', 'y': 'Number of Customers'},
                 color=cluster_dist.values,
-                color_continuous_scale=[[0, '#E3F2FD'], [0.5, '#00A3E0'], [1, '#0066CC']]
+                color_continuous_scale='Viridis'
             )
             st.plotly_chart(fig, use_container_width=True)
         
@@ -1034,7 +1932,7 @@ elif page == "🔮 Advanced Analytics":
                 'Transaction_Count': 'Transaction Count',
                 'Total_Quantity': 'Total Quantity'
             },
-            color_continuous_scale=[[0, '#0066CC'], [0.5, '#00A3E0'], [1, '#00C9A7']]
+            color_continuous_scale='Viridis'
         )
         fig.update_layout(height=600)
         st.plotly_chart(fig, use_container_width=True)
@@ -1063,15 +1961,15 @@ elif page == "🔮 Advanced Analytics":
             y=trends['Revenue'],
             mode='lines',
             name='Actual Revenue',
-            line=dict(color='#0066CC', width=3)
+            line=dict(color='#3498db', width=2)
         ))
         
-        fig.add_trace(go.Scatter(
+        fig.add_trace(go. Scatter(
             x=trends['transaction_date'],
             y=trends['MA'],
             mode='lines',
             name=f'{window}-Period Moving Average',
-            line=dict(color='#FFA500', width=3, dash='dash')
+            line=dict(color='#e74c3c', width=2, dash='dash')
         ))
         
         fig.update_layout(
@@ -1092,17 +1990,17 @@ elif page == "🔮 Advanced Analytics":
             st.metric("Moving Avg Forecast", f"${last_ma:,.0f}")
         with col3:
             diff_pct = ((last_ma - trends['Revenue']. iloc[-1]) / trends['Revenue'].iloc[-1] * 100)
-            st. metric("Forecast vs Actual", f"{diff_pct:+.1f}%")
+            st.metric("Forecast vs Actual", f"{diff_pct:+.1f}%")
 
 # Footer
 st.markdown("---")
 st.markdown(
-    """
-    <div style='text-align: center; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; margin-top: 20px;'>
-        <p style='color: white; font-size: 18px; margin-bottom: 10px; font-weight: 600;'>E-commerce Analytics Dashboard</p>
-        <p style='color: rgba(255,255,255,0.9); font-size: 14px; margin-bottom: 5px;'>Built with Streamlit by <strong>Arpit0523</strong></p>
-        <p style='color: rgba(255,255,255,0.8); font-size: 12px;'>Data Analytics • Machine Learning • Business Intelligence</p>
+    f"""
+    <div style='text-align: center; color: #7f8c8d; padding: 20px;'>
+        <p><strong>E-commerce Analytics Pro Dashboard</strong> | Built with Streamlit by <strong>Arpit0523</strong></p>
+        <p>📊 Data Analytics • 🤖 Machine Learning • 📈 Business Intelligence</p>
+        <p>Analyzing {len(df):,} transactions from {df['transaction_date'].min(). date()} to {df['transaction_date'].max().date()}</p>
     </div>
     """,
     unsafe_allow_html=True
-)
+)         
