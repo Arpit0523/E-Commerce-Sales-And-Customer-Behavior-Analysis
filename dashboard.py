@@ -2612,7 +2612,7 @@ elif page == "🔮 Advanced Analytics":
                         st. metric("Avg Forecast", f"${forecast_df['Revenue'].mean():,.0f}")
                     with col4:
                         growth = ((forecast_df['Revenue'].iloc[0] - historical['Revenue'].iloc[-1]) / historical['Revenue']. iloc[-1] * 100)
-                        st.metric("Forecast Growth", f"{growth: +.1f}%")
+                        st.metric("Forecast Growth", f"{growth:+.1f}%")
                     
                     st.subheader("📊 Model Performance")
                     col1, col2, col3 = st.columns(3)
@@ -2629,7 +2629,7 @@ elif page == "🔮 Advanced Analytics":
                     display_forecast['Date'] = display_forecast['Date'].dt.strftime('%Y-%m-%d')
                     st.dataframe(
                         display_forecast.style. format({
-                            'Revenue':  '${:,. 2f}',
+                            'Revenue':  '${:,.2f}',
                             'Lower_CI': '${:,.2f}',
                             'Upper_CI': '${:,.2f}'
                         }),
