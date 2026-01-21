@@ -1,7 +1,7 @@
 venv/
 __pycache__/
 .ipynb_checkpoints/
-data/processed/
+# data/processed/ - Commented out to allow deployment
 data/raw/*.csv
 .env
 .DS_Store# Python
@@ -14,10 +14,9 @@ venv/
 env/
 ENV/
 
-# Data files (optional - if CSV is too large)
-# DATASET. csv
-data/raw/*. csv
-data/processed/*.csv
+# Data files - Allow processed data for deployment
+# data/processed/*.csv
+data/raw/*.csv
 
 # Streamlit
 .streamlit/secrets.toml
