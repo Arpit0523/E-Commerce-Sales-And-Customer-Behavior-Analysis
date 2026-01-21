@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Advanced sales analysis utilities:
+Advanced sales analysis utilities: 
 - Time series forecasting
 - Seasonality decomposition
 - Category performance
@@ -12,12 +12,12 @@ import numpy as np
 from itertools import combinations
 from collections import Counter
 import warnings
-warnings. filterwarnings('ignore')
+warnings.filterwarnings('ignore')
 
 
 def sales_trends_analysis(df, freq='M'):
     """
-    Analyze sales trends over time.
+    Analyze sales trends over time. 
     
     Args:
         df: DataFrame with transaction data
@@ -45,12 +45,12 @@ def sales_trends_analysis(df, freq='M'):
     # Calculate growth rates
     trends["Revenue_Growth_Pct"] = trends["Revenue"].pct_change() * 100
     
-    return trends.reset_index()
+    return trends. reset_index()
 
 
 def category_performance_analysis(df):
     """
-    Analyze performance by product category.
+    Analyze performance by product category. 
     
     Args:
         df: DataFrame with transaction data
@@ -58,13 +58,13 @@ def category_performance_analysis(df):
     Returns:
         DataFrame with category metrics
     """
-    category_perf = df.groupby("category"). agg({
+    category_perf = df.groupby("category").agg({
         "total_amount": "sum",
         "profit": "sum",
         "transaction_id": "count",
         "customer_id": "nunique",
         "quantity": "sum",
-        "discount": "sum"
+        "discount":  "sum"
     })
     
     category_perf.columns = [
@@ -79,7 +79,7 @@ def category_performance_analysis(df):
     # Calculate additional metrics
     category_perf["Profit_Margin_Pct"] = (
         (category_perf["Profit"] / category_perf["Revenue"]) * 100
-    ). round(2)
+    ).round(2)
     
     category_perf["Avg_Transaction_Value"] = (
         category_perf["Revenue"] / category_perf["Transactions"]
@@ -89,7 +89,7 @@ def category_performance_analysis(df):
         (category_perf["Total_Discounts"] / (category_perf["Revenue"] + category_perf["Total_Discounts"])) * 100
     ).round(2)
     
-    return category_perf. sort_values("Revenue", ascending=False).reset_index()
+    return category_perf.sort_values("Revenue", ascending=False).reset_index()
 
 
 def product_profitability_analysis(df):
@@ -121,10 +121,11 @@ def product_profitability_analysis(df):
         product_perf["Revenue"] / product_perf["Units_Sold"]
     ).round(2)
     
-    product_perf["Revenue_Rank"] = product_perf["Revenue"].rank(ascending=False, method="dense")
-    product_perf["Profit_Rank"] = product_perf["Profit"].rank(ascending=False, method="dense")
+    product_perf["ROI_Pct"] = (
+        (product_perf["Profit"] / (product_perf["Revenue"] - product_perf["Profit"])) * 100
+    ).round(2)
     
-    return product_perf.sort_values("Revenue", ascending=False).reset_index()
+    return product_perf.sort_values("Profit", ascending=False).reset_index()
 
 
 def market_basket_analysis(df, min_support=0.01, min_confidence=0.3):
@@ -134,110 +135,62 @@ def market_basket_analysis(df, min_support=0.01, min_confidence=0.3):
     Args:
         df: DataFrame with transaction data
         min_support: Minimum support threshold
-        min_confidence: Minimum confidence threshold
+        min_confidence:  Minimum confidence threshold
     
     Returns:
         DataFrame with association rules
     """
     # Group products by transaction
-    baskets = df.groupby("transaction_id")["category"].apply(list).values
+    baskets = df.groupby("transaction_id")["product_name"].apply(list).values
     
-    # Find frequent itemsets (category pairs)
-    category_pairs = []
+    # Find frequent itemsets (pairs)
+    product_counts = Counter()
+    pair_counts = Counter()
+    total_transactions = len(baskets)
+    
     for basket in baskets:
-        if len(basket) >= 2:
-            for pair in combinations(set(basket), 2):
-                category_pairs.append(tuple(sorted(pair)))
-    
-    # Count frequencies
-    pair_counts = Counter(category_pairs)
-    total_transactions = df["transaction_id"].nunique()
-    
-    # Calculate support, confidence, and lift
-    rules = []
-    for (item1, item2), count in pair_counts.items():
-        support = count / total_transactions
+        unique_items = list(set(basket))
+        for item in unique_items:
+            product_counts[item] += 1
         
-        if support >= min_support:
-            # Calculate confidence and lift
-            item1_count = sum(1 for basket in baskets if item1 in basket)
-            item2_count = sum(1 for basket in baskets if item2 in basket)
+        if len(unique_items) >= 2:
+            for pair in combinations(sorted(unique_items), 2):
+                pair_counts[pair] += 1
+    
+    # Calculate metrics
+    associations = []
+    
+    for (item1, item2), pair_count in pair_counts.items():
+        support = pair_count / total_transactions
+        
+        if support >= min_support: 
+            conf_1_to_2 = pair_count / product_counts[item1]
+            conf_2_to_1 = pair_count / product_counts[item2]
             
-            confidence_1_to_2 = count / item1_count if item1_count > 0 else 0
-            confidence_2_to_1 = count / item2_count if item2_count > 0 else 0
-            
-            lift = (count * total_transactions) / (item1_count * item2_count) if item1_count > 0 and item2_count > 0 else 0
-            
-            if confidence_1_to_2 >= min_confidence or confidence_2_to_1 >= min_confidence:
-                rules.append({
+            if conf_1_to_2 >= min_confidence or conf_2_to_1 >= min_confidence:
+                # Calculate lift
+                expected = (product_counts[item1] / total_transactions) * (product_counts[item2] / total_transactions)
+                lift = support / expected if expected > 0 else 0
+                
+                associations.append({
                     "Item_1": item1,
                     "Item_2": item2,
-                    "Support": round(support, 4),
-                    "Confidence_1_to_2": round(confidence_1_to_2, 4),
-                    "Confidence_2_to_1": round(confidence_2_to_1, 4),
-                    "Lift": round(lift, 4),
-                    "Count": count
+                    "Support": support,
+                    "Confidence_1_to_2":  conf_1_to_2,
+                    "Confidence_2_to_1": conf_2_to_1,
+                    "Lift": lift
                 })
     
-    rules_df = pd.DataFrame(rules)
-    if not rules_df.empty:
-        rules_df = rules_df.sort_values("Lift", ascending=False)
+    if not associations:
+        # Return empty DataFrame with correct columns if no associations found
+        return pd.DataFrame(columns=["Item_1", "Item_2", "Support", "Confidence_1_to_2", "Confidence_2_to_1", "Lift"])
     
-    return rules_df
-
-
-def seasonal_decomposition_simple(df, freq='M'):
-    """
-    Simple seasonal decomposition of sales data.
-    
-    Args:
-        df: DataFrame with transaction data
-        freq: Frequency for aggregation
-    
-    Returns:
-        DataFrame with trend and seasonal components
-    """
-    sales_ts = df.set_index("transaction_date"). resample(freq)["total_amount"].sum()
-    
-    # Calculate moving average (trend)
-    window = 12 if freq == 'M' else 7
-    trend = sales_ts.rolling(window=window, center=True).mean()
-    
-    # Detrend
-    detrended = sales_ts - trend
-    
-    # Calculate seasonal component (average by period)
-    if freq == 'M':
-        seasonal = detrended.groupby(detrended.index.month).mean()
-    elif freq == 'W':
-        seasonal = detrended.groupby(detrended.index.isocalendar().week).mean()
-    else:
-        seasonal = detrended.groupby(detrended.index.dayofweek).mean()
-    
-    # Map back to original index
-    if freq == 'M':
-        seasonal_full = detrended.index.month.map(seasonal)
-    elif freq == 'W':
-        seasonal_full = detrended.index.isocalendar().week.map(seasonal)
-    else:
-        seasonal_full = detrended.index. dayofweek.map(seasonal)
-    
-    # Residual
-    residual = sales_ts - trend - seasonal_full
-    
-    result = pd.DataFrame({
-        "Observed": sales_ts,
-        "Trend": trend,
-        "Seasonal": seasonal_full,
-        "Residual": residual
-    })
-    
-    return result.reset_index()
+    return pd.DataFrame(associations).sort_values("Lift", ascending=False)
 
 
 def payment_shipping_analysis(df):
     """
-    Analyze payment methods and shipping preferences.
+    Analyze performance by payment method and shipping type.
     
     Args:
         df: DataFrame with transaction data
@@ -245,57 +198,157 @@ def payment_shipping_analysis(df):
     Returns:
         Tuple of (payment_analysis, shipping_analysis) DataFrames
     """
-    payment_analysis = df.groupby("payment_method").agg({
-        "total_amount": "sum",
-        "transaction_id": "count",
-        "customer_id": "nunique"
+    # Payment method analysis
+    payment_perf = df.groupby("payment_method").agg({
+        "total_amount": ["sum", "mean", "count"],
+        "profit": "sum",
+        "discount": "sum"
     })
-    payment_analysis.columns = ["Revenue", "Transactions", "Unique_Customers"]
-    payment_analysis["Avg_Transaction_Value"] = (
-        payment_analysis["Revenue"] / payment_analysis["Transactions"]
-    ).round(2)
     
-    shipping_analysis = df.groupby("shipping_method").agg({
-        "total_amount": "sum",
-        "transaction_id": "count",
-        "customer_id": "nunique"
+    payment_perf.columns = ["Total_Revenue", "Avg_Transaction", "Transaction_Count", "Total_Profit", "Total_Discounts"]
+    payment_perf = payment_perf.reset_index()
+    
+    # Shipping method analysis
+    shipping_perf = df.groupby("shipping_method").agg({
+        "total_amount": ["sum", "mean", "count"],
+        "profit": "sum"
     })
-    shipping_analysis.columns = ["Revenue", "Transactions", "Unique_Customers"]
-    shipping_analysis["Avg_Transaction_Value"] = (
-        shipping_analysis["Revenue"] / shipping_analysis["Transactions"]
-    ).round(2)
     
-    return payment_analysis. reset_index(), shipping_analysis.reset_index()
+    shipping_perf.columns = ["Total_Revenue", "Avg_Transaction", "Transaction_Count", "Total_Profit"]
+    shipping_perf = shipping_perf.reset_index()
+    
+    return payment_perf, shipping_perf
 
 
-if __name__ == "__main__":
-    from src.analysis import load_master
+def arima_sales_forecast(df, freq='M', periods=6, order=(1, 1, 1)):
+    """
+    Perform ARIMA time series forecasting on sales data.
     
-    df = load_master()
+    Args:
+        df: DataFrame with transaction data
+        freq: Frequency for resampling ('D', 'W', 'M')
+        periods: Number of periods to forecast
+        order: ARIMA order (p, d, q)
     
-    print("=" * 60)
-    print("SALES TRENDS ANALYSIS")
-    print("=" * 60)
-    trends = sales_trends_analysis(df, freq='M')
-    print(trends.tail())
+    Returns:
+        Tuple of (historical_data, forecast_data, model_summary)
+    """
+    from statsmodels.tsa.arima.model import ARIMA
     
-    print("\n" + "=" * 60)
-    print("CATEGORY PERFORMANCE")
-    print("=" * 60)
-    categories = category_performance_analysis(df)
-    print(categories)
+    try:
+        # Aggregate sales by time period
+        df_time = df. set_index("transaction_date")
+        revenue_series = df_time.resample(freq)["total_amount"].sum()
+        
+        # Remove any zero or missing values
+        revenue_series = revenue_series[revenue_series > 0]
+        
+        if len(revenue_series) < 10:
+            raise ValueError("Insufficient data points for ARIMA modeling")
+        
+        # Fit ARIMA model
+        model = ARIMA(revenue_series, order=order)
+        fitted_model = model.fit()
+        
+        # Generate forecast
+        forecast = fitted_model.forecast(steps=periods)
+        
+        # Get confidence intervals
+        forecast_result = fitted_model.get_forecast(steps=periods)
+        forecast_ci = forecast_result.conf_int()
+        
+        # Prepare historical data
+        historical = pd.DataFrame({
+            'Date': revenue_series.index,
+            'Revenue': revenue_series.values,
+            'Type': 'Historical'
+        })
+        
+        # Prepare forecast data
+        last_date = revenue_series.index[-1]
+        if freq == 'M':
+            forecast_dates = pd.date_range(start=last_date, periods=periods + 1, freq='MS')[1:]
+        elif freq == 'W':
+            forecast_dates = pd.date_range(start=last_date, periods=periods + 1, freq='W')[1:]
+        else: 
+            forecast_dates = pd.date_range(start=last_date, periods=periods + 1, freq='D')[1:]
+        
+        forecast_df = pd.DataFrame({
+            'Date': forecast_dates,
+            'Revenue': forecast. values,
+            'Lower_CI': forecast_ci. iloc[:, 0]. values,
+            'Upper_CI': forecast_ci.iloc[:, 1].values,
+            'Type': 'Forecast'
+        })
+        
+        # Model summary
+        summary = {
+            'AIC': fitted_model.aic,
+            'BIC': fitted_model.bic,
+            'RMSE': np.sqrt(fitted_model.mse),
+            'Order': order,
+            'Observations': len(revenue_series)
+        }
+        
+        return historical, forecast_df, summary
+        
+    except Exception as e: 
+        # Return empty results if ARIMA fails
+        print(f"ARIMA modeling failed: {str(e)}")
+        return None, None, None
+
+
+def exponential_smoothing_forecast(df, freq='M', periods=6):
+    """
+    Simple exponential smoothing forecast as fallback.
     
-    print("\n" + "=" * 60)
-    print("MARKET BASKET ANALYSIS")
-    print("=" * 60)
-    mba = market_basket_analysis(df)
-    print(mba.head(10))
+    Args:
+        df: DataFrame with transaction data
+        freq: Frequency for resampling
+        periods: Number of periods to forecast
     
-    print("\n" + "=" * 60)
-    print("PAYMENT & SHIPPING ANALYSIS")
-    print("=" * 60)
-    payment, shipping = payment_shipping_analysis(df)
-    print("Payment Methods:")
-    print(payment)
-    print("\nShipping Methods:")
-    print(shipping)
+    Returns:
+        Tuple of (historical_data, forecast_data)
+    """
+    from statsmodels.tsa.holtwinters import ExponentialSmoothing
+    
+    try: 
+        # Aggregate sales
+        df_time = df.set_index("transaction_date")
+        revenue_series = df_time.resample(freq)["total_amount"].sum()
+        revenue_series = revenue_series[revenue_series > 0]
+        
+        # Fit model
+        model = ExponentialSmoothing(revenue_series, seasonal=None, trend='add')
+        fitted_model = model.fit()
+        
+        # Forecast
+        forecast = fitted_model.forecast(steps=periods)
+        
+        # Prepare data
+        historical = pd.DataFrame({
+            'Date': revenue_series.index,
+            'Revenue':  revenue_series.values,
+            'Type': 'Historical'
+        })
+        
+        # Forecast dates
+        last_date = revenue_series.index[-1]
+        if freq == 'M':
+            forecast_dates = pd.date_range(start=last_date, periods=periods + 1, freq='MS')[1:]
+        elif freq == 'W':
+            forecast_dates = pd.date_range(start=last_date, periods=periods + 1, freq='W')[1:]
+        else:
+            forecast_dates = pd.date_range(start=last_date, periods=periods + 1, freq='D')[1:]
+        
+        forecast_df = pd.DataFrame({
+            'Date': forecast_dates,
+            'Revenue': forecast.values,
+            'Type': 'Forecast'
+        })
+        
+        return historical, forecast_df
+        
+    except Exception as e:
+        print(f"Exponential smoothing failed: {str(e)}")
+        return None, None

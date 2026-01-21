@@ -4,4 +4,34 @@ __pycache__/
 data/processed/
 data/raw/*.csv
 .env
+.DS_Store# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Data files (optional - if CSV is too large)
+# DATASET. csv
+data/raw/*. csv
+data/processed/*.csv
+
+# Streamlit
+.streamlit/secrets.toml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+*. ipynb

@@ -44,60 +44,215 @@ st.set_page_config(
     page_title="E-commerce Analytics Pro",
     page_icon="🛍️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    menu_items={
+        'About': "E-commerce Analytics Dashboard - Built with Streamlit"
+    }
 )
+
 
 # Custom CSS
 st.markdown("""
     <style>
+    .stApp {
+        background-color: #000000 !important;
+    }
     .main {
         padding: 0rem 1rem;
+        background-color: #000000 !important;
+    }
+    [data-testid="stSidebar"] {
+        background-color: #0A0A0A !important;
+        z-index: 999 !important;
+    }
+    [data-testid="stSidebar"] * {
+        color: #FFFFFF !important;
+    }
+    [data-testid="stSidebar"] label {
+        color: #FFFFFF !important;
+    }
+    [data-testid="stSidebar"] .stRadio > label {
+        color: #FFFFFF !important;
+    }
+    [data-testid="stSidebar"] .stSelectbox label {
+        color: #FFFFFF !important;
+    }
+    [data-testid="stSidebar"] .stDateInput label {
+        color: #FFFFFF !important;
+    }
+    /* All text elements - specific to main content area */
+    .main p, .main span, .main label,
+    [data-testid="stSidebar"] p, [data-testid="stSidebar"] span {
+        color: #FFFFFF !important;
+    }
+    /* Input fields */
+    input, select, textarea {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        border: 1px solid #333333 !important;
     }
     .metric-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 20px;
         border-radius: 15px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.5);
         color: white;
     }
     .stMetric {
-        background-color: rgba(255, 255, 255, 0.98) !important;
+        background-color: rgba(20, 20, 20, 0.95) !important;
         padding: 20px !important;
         border-radius: 12px !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-        border: 2px solid rgba(0, 102, 204, 0.1) !important;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+        border: 2px solid rgba(102, 126, 234, 0.4) !important;
     }
     .stMetric label {
-        color: #000000 !important;
+        color: #FFFFFF !important;
         font-weight: 600 !important;
         font-size: 14px !important;
     }
     .stMetric [data-testid="stMetricValue"] {
-        color: #000000 !important;
+        color: #FFFFFF !important;
         font-weight: 700 !important;
         font-size: 28px !important;
     }
     .stMetric [data-testid="stMetricDelta"] {
-        color: #1A202C !important;
+        color: #B8B8B8 !important;
         font-weight: 500 !important;
     }
     div[data-testid="stDataFrame"],
     div[data-testid="stDataFrame"] * {
-        color: #000000 !important;
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+    }
+    div[data-testid="stDataFrame"] {
+        border: 2px solid #667eea !important;
+        border-radius: 8px !important;
+        padding: 10px !important;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2) !important;
+        min-height: 100px !important;
+    }
+    /* DataFrame container - all levels */
+    div[data-testid="stDataFrame"] > div,
+    div[data-testid="stDataFrame"] > div > div,
+    div[data-testid="stDataFrame"] > div > div > div {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+    }
+    /* DataFrame canvas/viewer */
+    div[data-testid="stDataFrame"] canvas {
+        background-color: #1A1A1A !important;
+        filter: invert(0) !important;
+    }
+    div[data-testid="stDataFrame"] .stDataFrameGlideDataEditor {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+    }
+    /* All text elements in dataframe */
+    div[data-testid="stDataFrame"] span,
+    div[data-testid="stDataFrame"] p,
+    div[data-testid="stDataFrame"] div {
+        color: #FFFFFF !important;
+    }
+    /* DataFrame headers */
+    div[data-testid="stDataFrame"] thead tr th,
+    div[data-testid="stDataFrame"] .col_heading,
+    div[data-testid="stDataFrame"] th {
+        background-color: #667eea !important;
+        color: #FFFFFF !important;
+        font-weight: 700 !important;
+        padding: 12px !important;
+        border: 1px solid #764ba2 !important;
+    }
+    /* DataFrame cells - multiple selectors */
+    div[data-testid="stDataFrame"] tbody tr td,
+    div[data-testid="stDataFrame"] .data,
+    div[data-testid="stDataFrame"] td,
+    div[data-testid="stDataFrame"] [role="gridcell"] {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        padding: 10px !important;
+        border: 1px solid #333333 !important;
+        font-size: 13px !important;
+    }
+    /* DataFrame row hover */
+    div[data-testid="stDataFrame"] tbody tr:hover td {
+        background-color: #2A2A2A !important;
+    }
+    /* Styled dataframes */
+    div[data-testid="stDataFrame"] table {
+        color: #FFFFFF !important;
+        background-color: #1A1A1A !important;
+        border-collapse: collapse !important;
+    }
+    div[data-testid="stDataFrame"] table * {
+        color: #FFFFFF !important;
+    }
+    div[data-testid="stDataFrame"] table tbody {
+        background-color: #1A1A1A !important;
+    }
+    div[data-testid="stDataFrame"] table tbody td {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+    }
+    div[data-testid="stDataFrame"] table thead {
+        background-color: #667eea !important;
+    }
+    div[data-testid="stDataFrame"] table thead th {
+        background-color: #667eea !important;
+        color: #FFFFFF !important;
+    }
+    /* Row and column headings */
+    div[data-testid="stDataFrame"] .row_heading {
+        background-color: #667eea !important;
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+    }
+    div[data-testid="stDataFrame"] .blank {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+    }
+    /* Glide data grid - Streamlit's modern dataframe viewer */
+    div[data-testid="stDataFrame"] [class*="dvn-scroller"],
+    div[data-testid="stDataFrame"] [class*="dvn"],
+    [data-testid="stDataFrame"] [style*="grid"] {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+    }
+    [class*="cell"],
+    [class*="gdg-cell"],
+    [role="gridcell"] {
+        color: #FFFFFF !important;
+        background-color: #1A1A1A !important;
+    }
+    [class*="header-cell"],
+    [class*="gdg-header"],
+    [role="columnheader"] {
+        color: #FFFFFF !important;
+        background-color: #667eea !important;
+    }
+    /* React data grid elements */
+    div[data-testid="stDataFrame"] [class*="rdg"],
+    div[data-testid="stDataFrame"] [class*="rdg-cell"] {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+    }
+    div[data-testid="stDataFrame"] [class*="rdg-header"] {
+        background-color: #667eea !important;
+        color: #FFFFFF !important;
     }
     h1 {
-        color: #1f77b4 !important;
+        color: #667eea !important;
         font-weight: 700 !important;
         padding-bottom: 10px;
-        border-bottom: 3px solid #1f77b4;
+        border-bottom: 3px solid #667eea;
     }
     h2 {
-        color: #2c3e50 !important;
+        color: #FFFFFF !important;
         font-weight: 600 !important;
         margin-top: 20px;
     }
     h3 {
-        color: #1A202C !important;
+        color: #FFFFFF !important;
         font-weight: 700 !important;
         font-size: 26px !important;
         padding: 15px 20px !important;
@@ -110,58 +265,432 @@ st.markdown("""
     }
     .stTabs [data-baseweb="tab-list"] {
         gap: 24px;
+        background-color: transparent !important;
     }
     .stTabs [data-baseweb="tab"] {
         height: 50px;
         white-space: pre-wrap;
-        background-color: #f0f2f6;
+        background-color: #1A1A1A !important;
         border-radius: 8px;
         padding: 10px 20px;
         font-weight: 500;
         transition: all 0.3s;
+        color: #FFFFFF !important;
+        border: 1px solid #333333 !important;
     }
     .stTabs [aria-selected="true"] {
-        background-color: #1f77b4;
+        background-color: #667eea;
         color: white;
+        border: 1px solid #667eea;
     }
     .highlight-box {
-        background-color: rgba(255, 255, 255, 0.98) !important;
+        background-color: rgba(20, 20, 20, 0.95) !important;
         padding: 20px !important;
         border-radius: 12px !important;
-        border-left: 5px solid #1f77b4 !important;
+        border-left: 5px solid #667eea !important;
         margin: 10px 0 !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
     }
     .highlight-box * {
-        color: #000000 !important;
+        color: #FFFFFF !important;
     }
     .highlight-box h4 {
-        color: #1A202C !important;
+        color: #FFFFFF !important;
         font-weight: 700 !important;
         margin-bottom: 12px !important;
         font-size: 18px !important;
     }
     .highlight-box p {
-        color: #000000 !important;
+        color: #FFFFFF !important;
         font-size: 15px !important;
         line-height: 1.8 !important;
         margin-bottom: 8px !important;
     }
     .highlight-box strong {
-        color: #000000 !important;
+        color: #FFFFFF !important;
         font-weight: 700 !important;
     }
     .highlight-box ul, .highlight-box li {
-        color: #000000 !important;
+        color: #FFFFFF !important;
         font-size: 15px !important;
         line-height: 1.8 !important;
     }
     .stAlert, .stAlert * {
-        background-color: rgba(255, 255, 255, 0.98) !important;
-        color: #000000 !important;
+        background-color: rgba(20, 20, 20, 0.95) !important;
+        color: #FFFFFF !important;
+    }
+    /* Fix expander text */
+    .streamlit-expanderHeader {
+        color: #FFFFFF !important;
+    }
+    /* Fix caption text */
+    .css-1v0mbdj, .css-16huue1 {
+        color: #B8B8B8 !important;
+    }
+    /* Info, success, warning, error boxes */
+    .stSuccess, .stInfo, .stWarning, .stError {
+        background-color: rgba(20, 20, 20, 0.95) !important;
+        color: #FFFFFF !important;
+    }
+    /* Buttons */
+    .stButton > button {
+        background-color: #667eea !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 10px 24px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s !important;
+    }
+    .stButton > button:hover {
+        background-color: #764ba2 !important;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5) !important;
+    }
+    /* Selectbox and multiselect */
+    .stSelectbox > div > div {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        border: 1px solid #667eea !important;
+    }
+    .stSelectbox label {
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+    }
+    .stSelectbox [data-baseweb="select"] {
+        background-color: #1A1A1A !important;
+    }
+    .stSelectbox [data-baseweb="select"] > div {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        border: 1px solid #667eea !important;
+    }
+    .stSelectbox input {
+        color: #FFFFFF !important;
+    }
+    .stMultiSelect > div > div {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        border: 1px solid #667eea !important;
+    }
+    /* Dropdown options - enhanced visibility */
+    [data-baseweb="popover"] {
+        background-color: #0A0A0A !important;
+        border: 2px solid #667eea !important;
+        z-index: 9999 !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8) !important;
+    }
+    [data-baseweb="menu"] {
+        background-color: #0A0A0A !important;
+        z-index: 9999 !important;
+    }
+    [role="listbox"] {
+        background-color: #0A0A0A !important;
+        border: 2px solid #667eea !important;
+        z-index: 9999 !important;
+    }
+    [data-baseweb="menu"] li {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        padding: 12px 16px !important;
+        border-bottom: 1px solid #333333 !important;
+    }
+    [role="option"] {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        padding: 12px 16px !important;
+    }
+    [data-baseweb="menu"] li:hover,
+    [role="option"]:hover {
+        background-color: #667eea !important;
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+    }
+    [aria-selected="true"] {
+        background-color: #764ba2 !important;
+        color: #FFFFFF !important;
+        font-weight: 700 !important;
+    }
+    /* Slider */
+    .stSlider > div > div > div {
+        background-color: #1A1A1A !important;
+    }
+    .stSlider [role="slider"] {
+        background-color: #667eea !important;
+    }
+    .stSlider [data-baseweb="slider"] {
+        background-color: #333333 !important;
+    }
+    /* Radio buttons */
+    .stRadio > div {
+        background-color: transparent !important;
+    }
+    .stRadio label {
+        color: #FFFFFF !important;
+    }
+    /* Checkbox */
+    .stCheckbox label {
+        color: #FFFFFF !important;
+    }
+    /* Expander */
+    .streamlit-expanderHeader {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        border: 2px solid #667eea !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        padding: 12px !important;
+        z-index: 1 !important;
+    }
+    .streamlit-expanderHeader:hover {
+        background-color: #2A2A2A !important;
+        border-color: #764ba2 !important;
+    }
+    .streamlit-expanderContent {
+        background-color: #1A1A1A !important;
+        border: 2px solid #667eea !important;
+        border-top: none !important;
+        border-radius: 0 0 8px 8px !important;
+        padding: 15px !important;
+    }
+    /* Download button */
+    .stDownloadButton > button {
+        background-color: #667eea !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        border-radius: 8px !important;
+    }
+    /* File uploader */
+    .stFileUploader {
+        background-color: #1A1A1A !important;
+        border: 1px solid #333333 !important;
+        border-radius: 8px !important;
+    }
+    /* Text input */
+    .stTextInput > div > div > input {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        border: 1px solid #333333 !important;
+    }
+    /* Number input */
+    .stNumberInput > div > div > input {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        border: 1px solid #333333 !important;
+    }
+    /* Date input */
+    .stDateInput > div > div > input {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        border: 1px solid #333333 !important;
+    }
+    /* Time input */
+    .stTimeInput > div > div > input {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        border: 1px solid #333333 !important;
+    }
+    /* Text area */
+    .stTextArea > div > div > textarea {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        border: 1px solid #333333 !important;
+    }
+    /* Code block */
+    .stCodeBlock {
+        background-color: #1A1A1A !important;
+        border: 1px solid #333333 !important;
+    }
+    /* Markdown code */
+    code {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        padding: 2px 6px !important;
+        border-radius: 4px !important;
+    }
+    /* Table */
+    table {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        border: 2px solid #667eea !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        border-radius: 8px !important;
+        width: 100% !important;
+    }
+    table * {
+        color: #FFFFFF !important;
+    }
+    th {
+        background-color: #667eea !important;
+        color: #FFFFFF !important;
+        padding: 12px !important;
+        font-weight: 700 !important;
+        border: 1px solid #764ba2 !important;
+        text-align: left !important;
+    }
+    td {
+        background-color: #1A1A1A !important;
+        color: #FFFFFF !important;
+        padding: 10px !important;
+        border: 1px solid #333333 !important;
+    }
+    tbody {
+        background-color: #1A1A1A !important;
+    }
+    thead {
+        background-color: #667eea !important;
+    }
+    tr {
+        background-color: #1A1A1A !important;
+    }
+    tr:hover {
+        background-color: #2A2A2A !important;
+    }
+    tr:hover td {
+        background-color: #2A2A2A !important;
+    }
+    /* Spinner */
+    .stSpinner > div {
+        border-top-color: #667eea !important;
+    }
+    /* Progress bar */
+    .stProgress > div > div {
+        background-color: #667eea !important;
+    }
+    /* Columns */
+    [data-testid="column"] {
+        background-color: transparent !important;
+    }
+    /* Container */
+    [data-testid="stVerticalBlock"] {
+        background-color: transparent !important;
+    }
+    /* Block container - prevent dark patches */
+    [data-testid="stHorizontalBlock"] {
+        background-color: transparent !important;
+    }
+    /* Ensure content blocks are visible */
+    .element-container {
+        background-color: transparent !important;
+    }
+    /* Make empty dataframes visible */
+    .dataframe {
+        border: 2px solid #667eea !important;
+        border-radius: 8px !important;
+        min-height: 50px !important;
+    }
+    /* Plotly chart containers */
+    .js-plotly-plot {
+        border: 1px solid #333333 !important;
+        border-radius: 8px !important;
+        background-color: #000000 !important;
+    }
+    /* Header */
+    header {
+        background-color: #000000 !important;
+    }
+    /* Footer */
+    footer {
+        background-color: #000000 !important;
+        color: #666666 !important;
+    }
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #1A1A1A;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #667eea;
+        border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #764ba2;
+    }
+    
+    /* Responsive breakpoints */
+    @media (max-width: 768px) {
+        .main {
+            padding: 0rem 0.5rem;
+        }
+        .stMetric {
+            padding: 15px !important;
+        }
+        h3 {
+            font-size: 20px !important;
+            padding: 12px 15px !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .stTabs [data-baseweb="tab"] {
+            height: auto;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+    }
+    
+    /* Ensure modals and tooltips appear above everything */
+    [role="dialog"],
+    [role="tooltip"],
+    .stTooltipIcon {
+        z-index: 10000 !important;
     }
     </style>
     """, unsafe_allow_html=True)
+
+# Set default plotly template to dark
+import plotly.io as pio
+pio.templates.default = "plotly_dark"
+
+# Custom plotly layout for better visibility
+def update_chart_layout(fig):
+    """Update plotly chart with dark theme settings for maximum visibility"""
+    fig.update_layout(
+        plot_bgcolor='#000000',
+        paper_bgcolor='#000000',
+        font=dict(color='#FFFFFF', size=12),
+        title_font=dict(color='#FFFFFF', size=16, family='Arial'),
+        legend=dict(
+            bgcolor='rgba(0, 0, 0, 0.8)',
+            bordercolor='#333333',
+            borderwidth=1,
+            font=dict(color='#FFFFFF')
+        ),
+        xaxis=dict(
+            gridcolor='#333333',
+            color='#FFFFFF',
+            linecolor='#333333',
+            tickfont=dict(color='#FFFFFF'),
+            title_font=dict(color='#FFFFFF')
+        ),
+        yaxis=dict(
+            gridcolor='#333333',
+            color='#FFFFFF',
+            linecolor='#333333',
+            tickfont=dict(color='#FFFFFF'),
+            title_font=dict(color='#FFFFFF')
+        ),
+        hoverlabel=dict(
+            bgcolor='#1A1A1A',
+            font_color='#FFFFFF',
+            bordercolor='#667eea'
+        ),
+        margin=dict(l=50, r=50, t=50, b=50)
+    )
+    # Update trace colors for better visibility on black background
+    fig.update_traces(
+        marker=dict(line=dict(color='#FFFFFF', width=0.5)),
+        textfont=dict(color='#FFFFFF')
+    )
+    return fig
 
 # Load data with caching
 @st.cache_data
@@ -326,6 +855,7 @@ if page == "📊 Overview":
         )
         fig.update_traces(line_color='#1f77b4', fillcolor='rgba(31, 119, 180, 0.3)')
         fig.update_layout(height=350, hovermode='x unified')
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
@@ -341,6 +871,7 @@ if page == "📊 Overview":
         )
         fig. update_traces(textposition='inside', textinfo='percent+label')
         fig.update_layout(height=350)
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
     
     with col3:
@@ -356,6 +887,7 @@ if page == "📊 Overview":
             color_continuous_scale='Viridis'
         )
         fig.update_layout(height=350, showlegend=False)
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
     
     # Second row
@@ -375,6 +907,7 @@ if page == "📊 Overview":
             color_continuous_scale='Greens'
         )
         fig.update_layout(height=400, showlegend=False)
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
@@ -395,6 +928,7 @@ if page == "📊 Overview":
             yaxis_title='Number of Orders',
             height=400
         )
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
     
     # Quick Insights
@@ -471,7 +1005,7 @@ elif page == "📈 Sales Analysis":
         fig.update_yaxes(title_text="Revenue ($)", row=1, col=1)
         fig.update_yaxes(title_text="Profit ($)", row=2, col=1)
         fig.update_layout(height=700, showlegend=False, hovermode='x unified')
-        
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
         
         # Growth Metrics
@@ -515,6 +1049,7 @@ elif page == "📈 Sales Analysis":
                 color_continuous_scale='Blues'
             )
             fig. update_layout(xaxis_tickangle=-45)
+            fig = update_chart_layout(fig)
             st. plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -527,6 +1062,7 @@ elif page == "📈 Sales Analysis":
                 color_continuous_scale='Greens'
             )
             fig.update_layout(xaxis_tickangle=-45)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         # Detailed table
@@ -564,6 +1100,7 @@ elif page == "📈 Sales Analysis":
             labels={'Profit_Margin_Pct': 'Profit Margin (%)'}
         )
         fig.update_layout(height=max(400, top_n * 30), yaxis={'categoryorder': 'total ascending'})
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
         
         # Product scatter
@@ -578,6 +1115,7 @@ elif page == "📈 Sales Analysis":
             title='Product Revenue vs Profit (Top 50)',
             color_continuous_scale='Viridis'
         )
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
         
         # Detailed table
@@ -604,17 +1142,20 @@ elif page == "📈 Sales Analysis":
             st.markdown("#### 💳 Payment Methods")
             fig = px.pie(
                 payment_df,
-                values='Revenue',
+                values='Total_Revenue',
                 names='payment_method',
                 title='Revenue by Payment Method',
                 hole=0.3
             )
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
             
             st.dataframe(
-                payment_df. style.format({
-                    'Revenue': '${:,.2f}',
-                    'Avg_Transaction_Value': '${:,.2f}'
+                payment_df.style.format({
+                    'Total_Revenue': '${:,.2f}',
+                    'Avg_Transaction': '${:,.2f}',
+                    'Total_Profit': '${:,.2f}',
+                    'Total_Discounts': '${:,.2f}'
                 }),
                 use_container_width=True
             )
@@ -623,17 +1164,19 @@ elif page == "📈 Sales Analysis":
             st.markdown("#### 🚚 Shipping Methods")
             fig = px.pie(
                 shipping_df,
-                values='Revenue',
+                values='Total_Revenue',
                 names='shipping_method',
                 title='Revenue by Shipping Method',
                 hole=0.3
             )
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
             
-            st. dataframe(
+            st.dataframe(
                 shipping_df.style.format({
-                    'Revenue': '${:,.2f}',
-                    'Avg_Transaction_Value': '${:,.2f}'
+                    'Total_Revenue': '${:,.2f}',
+                    'Avg_Transaction': '${:,.2f}',
+                    'Total_Profit': '${:,.2f}'
                 }),
                 use_container_width=True
             )
@@ -681,6 +1224,7 @@ elif page == "👥 Customer Insights":
                 color_discrete_sequence=['#3498db']
             )
             fig.update_layout(showlegend=False)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -695,6 +1239,7 @@ elif page == "👥 Customer Insights":
                 color=gender_revenue.values,
                 color_continuous_scale='Viridis'
             )
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         # City analysis
@@ -711,6 +1256,7 @@ elif page == "👥 Customer Insights":
             color_continuous_scale='Blues'
         )
         fig.update_layout(height=500)
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
     
     with tab2:
@@ -735,6 +1281,7 @@ elif page == "👥 Customer Insights":
                 color_discrete_map=colors
             )
             fig.update_layout(showlegend=False)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -751,6 +1298,7 @@ elif page == "👥 Customer Insights":
                 color_discrete_map=colors,
                 hole=0.3
             )
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         # RFM scatter plot
@@ -767,6 +1315,7 @@ elif page == "👥 Customer Insights":
             color_discrete_map=colors
         )
         fig.update_layout(height=500)
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
         
         # Segment statistics
@@ -808,6 +1357,7 @@ elif page == "👥 Customer Insights":
                 labels={'Total_Spent': 'Total Spent ($)'},
                 color_discrete_sequence=['#9b59b6']
             )
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -821,6 +1371,7 @@ elif page == "👥 Customer Insights":
                 labels={'Transaction_Count': 'Number of Transactions', 'Total_Spent': 'Total Spent ($)'},
                 color_continuous_scale='Viridis'
             )
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         # Top customers
@@ -838,6 +1389,7 @@ elif page == "👥 Customer Insights":
             color_continuous_scale='Blues'
         )
         fig.update_layout(xaxis_tickangle=-45)
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
         
         # CLV summary stats
@@ -885,6 +1437,7 @@ elif page == "👥 Customer Insights":
                 title='Customer Churn Risk Distribution',
                 color_discrete_sequence=['#2ecc71', '#f39c12', '#e67e22', '#e74c3c']
             )
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -898,6 +1451,7 @@ elif page == "👥 Customer Insights":
             )
             fig.add_vline(x=churn_threshold, line_dash="dash", line_color="red", 
                          annotation_text="Churn Threshold")
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         # Cohort analysis
@@ -915,6 +1469,7 @@ elif page == "👥 Customer Insights":
                 aspect='auto'
             )
             fig.update_layout(height=500)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         except Exception as e:
             st.warning("Not enough data for cohort analysis.  Need multiple months of data.")
@@ -967,6 +1522,7 @@ elif page == "📦 Product Analysis":
         xaxis_tickangle=-45,
         height=500
     )
+    fig = update_chart_layout(fig)
     st.plotly_chart(fig, use_container_width=True)
     
     # Full product table
@@ -1025,6 +1581,7 @@ elif page == "📱 Device & Session":
             )
             fig.update_traces(texttemplate='$%{text:,.0f}', textposition='outside')
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -1041,6 +1598,7 @@ elif page == "📱 Device & Session":
                 }
             )
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         # Device performance table
@@ -1089,6 +1647,7 @@ elif page == "📱 Device & Session":
                 color_discrete_sequence=['#3498db']
             )
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -1103,6 +1662,7 @@ elif page == "📱 Device & Session":
             )
             fig.update_traces(texttemplate='$%{text:.0f}', textposition='outside')
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st. plotly_chart(fig, use_container_width=True)
         
         # Detailed table
@@ -1151,6 +1711,7 @@ elif page == "📱 Device & Session":
                 opacity=0.5
             )
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -1173,6 +1734,7 @@ elif page == "📱 Device & Session":
             )
             fig.update_traces(texttemplate='$%{text:.0f}', textposition='outside')
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
 
 # ============================================================================
@@ -1225,6 +1787,7 @@ elif page == "⭐ Satisfaction":
                 yaxis_title='Number of Transactions',
                 height=400
             )
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -1239,6 +1802,7 @@ elif page == "⭐ Satisfaction":
             )
             fig.update_traces(textposition='inside', textinfo='percent+label')
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st. plotly_chart(fig, use_container_width=True)
         
         # Rating by category
@@ -1262,6 +1826,7 @@ elif page == "⭐ Satisfaction":
         )
         fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
         fig. update_layout(height=400, xaxis_tickangle=-45)
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
         
         # Rating statistics table
@@ -1297,6 +1862,7 @@ elif page == "⭐ Satisfaction":
             )
             fig. update_traces(texttemplate='%{text:.2f}', textposition='outside')
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -1310,6 +1876,7 @@ elif page == "⭐ Satisfaction":
                 opacity=0.5
             )
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         # Device vs rating
@@ -1328,6 +1895,7 @@ elif page == "⭐ Satisfaction":
         )
         fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
         fig.update_layout(height=400)
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
         
         # Correlation heatmap
@@ -1343,6 +1911,7 @@ elif page == "⭐ Satisfaction":
             text_auto='. 2f'
         )
         fig.update_layout(height=500)
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
     
     with tab3:
@@ -1377,6 +1946,7 @@ elif page == "⭐ Satisfaction":
             height=400,
             hovermode='x unified'
         )
+        fig = update_chart_layout(fig)
         st. plotly_chart(fig, use_container_width=True)
         
         # Low rating alerts
@@ -1444,6 +2014,7 @@ elif page == "🚚 Delivery Performance":
             fig.add_vline(x=avg_delivery, line_dash="dash", line_color="red",
                          annotation_text=f"Avg: {avg_delivery:.1f}d")
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -1461,6 +2032,7 @@ elif page == "🚚 Delivery Performance":
             )
             fig. update_traces(texttemplate='%{text:.2f}⭐', textposition='outside')
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st. plotly_chart(fig, use_container_width=True)
         
         # Delivery by shipping method
@@ -1504,6 +2076,7 @@ elif page == "🚚 Delivery Performance":
         )
         fig.update_traces(texttemplate='%{text:.1f}d', textposition='outside')
         fig.update_layout(height=400, xaxis_tickangle=-45)
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
         
         # City performance table
@@ -1535,6 +2108,7 @@ elif page == "🚚 Delivery Performance":
             )
             fig.update_traces(textposition='inside', textinfo='percent+label')
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -1549,6 +2123,7 @@ elif page == "🚚 Delivery Performance":
             )
             fig.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         # Delivery speed table
@@ -1602,6 +2177,7 @@ elif page == "🔄 Loyalty Analysis":
             )
             fig.update_traces(texttemplate='$%{text:.2f}', textposition='outside')
             fig. update_layout(height=400, showlegend=False)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -1616,6 +2192,7 @@ elif page == "🔄 Loyalty Analysis":
             )
             fig.update_traces(texttemplate='%{text:.2f}⭐', textposition='outside')
             fig.update_layout(height=400, showlegend=False)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         # Detailed comparison
@@ -1646,6 +2223,7 @@ elif page == "🔄 Loyalty Analysis":
             hole=0.4
         )
         fig.update_traces(textposition='inside', textinfo='percent+label')
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
     
     with tab2:
@@ -1673,6 +2251,7 @@ elif page == "🔄 Loyalty Analysis":
             )
             fig.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
             fig.update_layout(height=400, xaxis_tickangle=-45)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -1694,6 +2273,7 @@ elif page == "🔄 Loyalty Analysis":
             )
             fig.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
             fig.update_layout(height=400)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         # Rating impact
@@ -1717,6 +2297,7 @@ elif page == "🔄 Loyalty Analysis":
         fig.update_traces(texttemplate='%{text:.1f}%', textposition='top center',
                          line_color='#2ecc71', line_width=3, marker=dict(size=12))
         fig.update_layout(height=400)
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
         
         # Discount impact
@@ -1742,6 +2323,7 @@ elif page == "🔄 Loyalty Analysis":
         )
         fig.update_traces(texttemplate='$%{text:.2f}', textposition='outside')
         fig.update_layout(height=400, showlegend=False)
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
     
     with tab3:
@@ -1861,6 +2443,7 @@ elif page == "🔮 Advanced Analytics":
                 color_continuous_scale='Viridis'
             )
             fig.update_layout(height=500)
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
             
             # Detailed table
@@ -1905,6 +2488,7 @@ elif page == "🔮 Advanced Analytics":
                 color=cluster_dist.values,
                 color_continuous_scale='Viridis'
             )
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
@@ -1915,6 +2499,7 @@ elif page == "🔮 Advanced Analytics":
                 title='Cluster Proportion',
                 hole=0.3
             )
+            fig = update_chart_layout(fig)
             st.plotly_chart(fig, use_container_width=True)
         
         # 3D scatter
@@ -1935,62 +2520,232 @@ elif page == "🔮 Advanced Analytics":
             color_continuous_scale='Viridis'
         )
         fig.update_layout(height=600)
+        fig = update_chart_layout(fig)
         st.plotly_chart(fig, use_container_width=True)
     
     with tab3:
-        st.subheader("📈 Sales Forecasting")
-        
-        st.info("Simple moving average forecast for revenue trends")
-        
-        forecast_period = st.selectbox("Forecast Period", ["Monthly", "Weekly"])
-        window = st.slider("Moving Average Window", 3, 12, 6)
-        
-        freq = 'M' if forecast_period == "Monthly" else 'W'
-        trends = sales_trends_analysis(filtered_df, freq=freq)
-        
-        # Calculate moving average
-        trends['MA'] = trends['Revenue'].rolling(window=window).mean()
-        
-        # Simple forecast (last MA value)
-        last_ma = trends['MA'].iloc[-1]
-        
-        fig = go.Figure()
-        
-        fig.add_trace(go. Scatter(
-            x=trends['transaction_date'],
-            y=trends['Revenue'],
-            mode='lines',
-            name='Actual Revenue',
-            line=dict(color='#3498db', width=2)
-        ))
-        
-        fig.add_trace(go. Scatter(
-            x=trends['transaction_date'],
-            y=trends['MA'],
-            mode='lines',
-            name=f'{window}-Period Moving Average',
-            line=dict(color='#e74c3c', width=2, dash='dash')
-        ))
-        
-        fig.update_layout(
-            title=f'{forecast_period} Revenue with Moving Average Forecast',
-            xaxis_title='Date',
-            yaxis_title='Revenue ($)',
-            height=500,
-            hovermode='x unified'
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
+        st.subheader("📈 Advanced Sales Forecasting")
         
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            st.metric("Latest Revenue", f"${trends['Revenue'].iloc[-1]:,.0f}")
+            forecast_method = st.selectbox("Forecasting Method", ["ARIMA", "Moving Average", "Exponential Smoothing"])
+        
         with col2:
-            st.metric("Moving Avg Forecast", f"${last_ma:,.0f}")
+            forecast_period = st.selectbox("Forecast Period", ["Monthly", "Weekly"])
+        
         with col3:
-            diff_pct = ((last_ma - trends['Revenue']. iloc[-1]) / trends['Revenue'].iloc[-1] * 100)
-            st.metric("Forecast vs Actual", f"{diff_pct:+.1f}%")
+            periods_ahead = st.slider("Periods to Forecast", 3, 12, 6)
+        
+        freq = 'M' if forecast_period == "Monthly" else 'W'
+        
+        if forecast_method == "ARIMA":
+            st.info("🤖 Using ARIMA (AutoRegressive Integrated Moving Average) for time series forecasting")
+            
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                p = st.number_input("AR Order (p)", 0, 5, 1)
+            with col2:
+                d = st. number_input("Differencing (d)", 0, 2, 1)
+            with col3:
+                q = st.number_input("MA Order (q)", 0, 5, 1)
+            
+            try:
+                from src.sales_analysis import arima_sales_forecast
+                
+                with st.spinner("Training ARIMA model..."):
+                    historical, forecast_df, summary = arima_sales_forecast(
+                        filtered_df,
+                        freq=freq,
+                        periods=periods_ahead,
+                        order=(p, d, q)
+                    )
+                
+                if historical is not None and forecast_df is not None: 
+                    fig = go.Figure()
+                    
+                    fig.add_trace(go. Scatter(
+                        x=historical['Date'],
+                        y=historical['Revenue'],
+                        mode='lines',
+                        name='Historical Revenue',
+                        line=dict(color='#3498db', width=2)
+                    ))
+                    
+                    fig.add_trace(go.Scatter(
+                        x=forecast_df['Date'],
+                        y=forecast_df['Revenue'],
+                        mode='lines+markers',
+                        name='ARIMA Forecast',
+                        line=dict(color='#e74c3c', width=2, dash='dash'),
+                        marker=dict(size=8)
+                    ))
+                    
+                    fig.add_trace(go.Scatter(
+                        x=pd.concat([forecast_df['Date'], forecast_df['Date'][: :-1]]),
+                        y=pd. concat([forecast_df['Upper_CI'], forecast_df['Lower_CI'][::-1]]),
+                        fill='toself',
+                        fillcolor='rgba(231, 76, 60, 0.2)',
+                        line=dict(color='rgba(255,255,255,0)'),
+                        name='95% Confidence Interval',
+                        showlegend=True
+                    ))
+                    
+                    fig.update_layout(
+                        title=f'ARIMA({p},{d},{q}) Sales Forecast - {forecast_period}',
+                        xaxis_title='Date',
+                        yaxis_title='Revenue ($)',
+                        height=500,
+                        hovermode='x unified'
+                    )
+                    
+                    fig = update_chart_layout(fig)
+                    st. plotly_chart(fig, use_container_width=True)
+                    
+                    col1, col2, col3, col4 = st.columns(4)
+                    
+                    with col1:
+                        st.metric("Latest Actual", f"${historical['Revenue']. iloc[-1]:,.0f}")
+                    with col2:
+                        st.metric("First Forecast", f"${forecast_df['Revenue'].iloc[0]: ,.0f}")
+                    with col3:
+                        st. metric("Avg Forecast", f"${forecast_df['Revenue'].mean():,.0f}")
+                    with col4:
+                        growth = ((forecast_df['Revenue'].iloc[0] - historical['Revenue'].iloc[-1]) / historical['Revenue']. iloc[-1] * 100)
+                        st.metric("Forecast Growth", f"{growth: +.1f}%")
+                    
+                    st.subheader("📊 Model Performance")
+                    col1, col2, col3 = st.columns(3)
+                    
+                    with col1:
+                        st.metric("AIC Score", f"{summary['AIC']:.2f}")
+                    with col2:
+                        st. metric("BIC Score", f"{summary['BIC']:.2f}")
+                    with col3:
+                        st.metric("RMSE", f"${summary['RMSE']: ,.2f}")
+                    
+                    st.subheader("📋 Forecast Values")
+                    display_forecast = forecast_df. copy()
+                    display_forecast['Date'] = display_forecast['Date'].dt.strftime('%Y-%m-%d')
+                    st.dataframe(
+                        display_forecast.style. format({
+                            'Revenue':  '${:,. 2f}',
+                            'Lower_CI': '${:,.2f}',
+                            'Upper_CI': '${:,.2f}'
+                        }),
+                        use_container_width=True
+                    )
+                else:
+                    st.error("ARIMA modeling failed. Try different parameters or use Moving Average method.")
+                    
+            except Exception as e:
+                st.error(f"Error running ARIMA:  {str(e)}")
+                st.info("Try adjusting parameters or switching to Moving Average method.")
+        
+        elif forecast_method == "Exponential Smoothing":
+            st.info("📊 Using Exponential Smoothing for trend-based forecasting")
+            
+            try:
+                from src.sales_analysis import exponential_smoothing_forecast
+                
+                with st.spinner("Calculating exponential smoothing forecast..."):
+                    historical, forecast_df = exponential_smoothing_forecast(
+                        filtered_df,
+                        freq=freq,
+                        periods=periods_ahead
+                    )
+                
+                if historical is not None and forecast_df is not None:
+                    fig = go.Figure()
+                    
+                    fig.add_trace(go.Scatter(
+                        x=historical['Date'],
+                        y=historical['Revenue'],
+                        mode='lines',
+                        name='Historical Revenue',
+                        line=dict(color='#3498db', width=2)
+                    ))
+                    
+                    fig.add_trace(go.Scatter(
+                        x=forecast_df['Date'],
+                        y=forecast_df['Revenue'],
+                        mode='lines+markers',
+                        name='ES Forecast',
+                        line=dict(color='#2ecc71', width=2, dash='dash'),
+                        marker=dict(size=8)
+                    ))
+                    
+                    fig.update_layout(
+                        title=f'Exponential Smoothing Forecast - {forecast_period}',
+                        xaxis_title='Date',
+                        yaxis_title='Revenue ($)',
+                        height=500,
+                        hovermode='x unified'
+                    )
+                    
+                    fig = update_chart_layout(fig)
+                    st.plotly_chart(fig, use_container_width=True)
+                    
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st. metric("Latest Revenue", f"${historical['Revenue']. iloc[-1]:,.0f}")
+                    with col2:
+                        st.metric("Avg Forecast", f"${forecast_df['Revenue'].mean():,.0f}")
+                    with col3:
+                        growth = ((forecast_df['Revenue']. iloc[0] - historical['Revenue'].iloc[-1]) / historical['Revenue'].iloc[-1] * 100)
+                        st.metric("Forecast Growth", f"{growth:+.1f}%")
+                else:
+                    st.error("Exponential Smoothing failed.")
+            except Exception as e:
+                st. error(f"Error:  {str(e)}")
+        
+        else:  # Moving Average
+            st.info("📈 Simple moving average forecast for revenue trends")
+            
+            window = st.slider("Moving Average Window", 3, 12, 6)
+            
+            trends = sales_trends_analysis(filtered_df, freq=freq)
+            trends['MA'] = trends['Revenue'].rolling(window=window).mean()
+            last_ma = trends['MA'].iloc[-1]
+            
+            fig = go.Figure()
+            
+            fig.add_trace(go.Scatter(
+                x=trends['transaction_date'],
+                y=trends['Revenue'],
+                mode='lines',
+                name='Actual Revenue',
+                line=dict(color='#3498db', width=2)
+            ))
+            
+            fig.add_trace(go.Scatter(
+                x=trends['transaction_date'],
+                y=trends['MA'],
+                mode='lines',
+                name=f'{window}-Period Moving Average',
+                line=dict(color='#e74c3c', width=2, dash='dash')
+            ))
+            
+            fig. update_layout(
+                title=f'{forecast_period} Revenue with Moving Average Forecast',
+                xaxis_title='Date',
+                yaxis_title='Revenue ($)',
+                height=500,
+                hovermode='x unified'
+            )
+            
+            fig = update_chart_layout(fig)
+            st. plotly_chart(fig, use_container_width=True)
+            
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.metric("Latest Revenue", f"${trends['Revenue']. iloc[-1]:,.0f}")
+            with col2:
+                st.metric("Moving Avg Forecast", f"${last_ma:,.0f}")
+            with col3:
+                diff_pct = ((last_ma - trends['Revenue'].iloc[-1]) / trends['Revenue'].iloc[-1] * 100)
+                st. metric("Forecast vs Actual", f"{diff_pct:+.1f}%")
 
 # Footer
 st.markdown("---")
